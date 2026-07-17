@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>吃什嘛了</title>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+  <style>
+/* ===== Reset & Base ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#FFF8F5;color:#3D2C2C;max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden;padding-bottom:70px}
+h1{font-size:18px;font-weight:700}
+
+/* ===== Header ===== */
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;position:sticky;top:0;background:#FFF8F5;z-index:10}
+.header-icon{background:none;border:none;font-size:20px;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.header-icon:active{background:rgba(0,0,0,0.05)}
+.header-spacer{width:40px;flex-shrink:0}
+.header h1{font-family:'ZCOOL KuaiLe',cursive;font-size:18px;color:#3D2C2C}
+
+/* ===== Footer Nav ===== */
+#footer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:90%;max-width:420px;display:flex;background:#fff;border-top:1px solid #f0e8e3;border-radius:20px 20px 0 0;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -2px 12px rgba(0,0,0,0.06)}
+#footer button{flex:1;padding:4px 4px 10px;background:none;border:none;font-size:11px;color:#bbb;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+#footer button .fi{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;line-height:1}
+#footer button.on{color:#E8734A;font-weight:600}
+
+/* ===== Views ===== */
+.view{display:none;min-height:100vh}
+.view.on{display:block;min-height:100vh}
+
+/* ===== Overview Card ===== */
+.overview-section{padding:0 16px 80px;min-height:calc(100vh - 70px);box-sizing:border-box}
+.overview-card{background:#fff;border-radius:16px;padding:18px 20px;margin-bottom:12px;text-align:center;box-shadow:2px 2px 8px rgba(0,0,0,0.06);height:320px!important;display:flex;flex-direction:column;justify-content:flex-start;gap:1px;overflow:hidden}
+.date-big{font-family:'ZCOOL KuaiLe',cursive;font-size:22px;color:#3D2C2C;display:inline-flex;align-items:center;gap:12px;justify-content:center;width:100%}
+.date-arrow{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#FFF5F0;color:#E8734A;font-size:24px;font-weight:700;cursor:pointer;user-select:none;-webkit-user-select:none;transition:all .15s}
+.date-arrow:active{background:#E8734A;color:#fff}
+.cal-inline{font-family:'ZCOOL KuaiLe',cursive;font-size:44px;color:#E8734A;line-height:1.1;height:48px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px}
+.cal-unit{font-size:18px;color:#999;font-weight:400;margin-left:4px}
+.cal-target{font-family:'ZCOOL KuaiLe',cursive;font-size:14px;color:#999}
+.cal-label{font-size:13px;color:#bbb}
+
+/* ===== Progress Bar ===== */
+.progress-wrap{position:relative;height:24px!important;border:2px solid #3D2C2C;border-radius:12px;background:#fff;overflow:hidden}
+.progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#E8734A,#F4A261);transition:width .5s ease}
+.progress-fill.over{background:linear-gradient(90deg,#EF5350,#FF7043)}
+.progress-fill::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 10px,rgba(255,255,255,0.12) 10px,rgba(255,255,255,0.12) 12px);border-radius:10px}
+.progress-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'ZCOOL KuaiLe',cursive;font-size:13px;color:#3D2C2C;z-index:2;text-shadow:1px 1px 0 #fff}
+.msg{font-family:'ZCOOL KuaiLe',cursive;font-size:14px;min-height:22px;transition:all .3s;margin-bottom:4px}
+
+/* ===== Meal Cards ===== */
+.meal-card{background:#fff;border-radius:16px;padding:14px 16px;margin:0 16px 10px;box-shadow:2px 2px 8px rgba(0,0,0,0.06)}
+.meal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.meal-title{font-family:'ZCOOL KuaiLe',cursive;font-size:16px;color:#E8734A;display:flex;align-items:center;gap:6px}
+.meal-cal{font-family:'ZCOOL KuaiLe',cursive;font-size:14px;color:#999}
+.meal-actions{display:flex;gap:8px}
+.meal-actions button{background:none;border:none;font-size:16px;cursor:pointer;padding:2px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent}
+.meal-actions button:active{background:#f5f5f5}
+.meal-edit-btn{color:#999}
+.meal-del-btn{color:#E57373}
+.food-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f8f4f0}
+.food-row:last-child{border-bottom:none}
+.food-info{flex:1}
+.food-name{font-size:14px;color:#3D2C2C}
+.food-meta{font-size:12px;color:#bbb}
+.food-cal{font-family:'ZCOOL KuaiLe',cursive;font-size:15px;color:#E8734A;margin-right:24px;text-align:left;min-width:50px}
+.food-del{background:none;border:none;font-size:18px;color:#ccc;cursor:pointer;padding:0 4px;-webkit-tap-highlight-color:transparent}
+.food-del:active{color:#E57373}
+.food-row.editing{padding:0;position:relative;min-height:40px}
+.food-row.editing .food-text{display:block;flex:1;min-width:0;overflow:visible;white-space:normal}.food-row.editing .food-cal,.food-row.editing .food-acts{display:none}
+.food-msg{font-family:ZCOOL KuaiLe,cursive;font-size:14px;text-align:center;margin-top:8px;min-height:22px;color:#999;margin-top:auto}
+.f-edit-input{flex:2;min-width:100px;padding:6px 8px;border:1.5px solid #E8734A;border-radius:8px;font-size:13px;outline:none;font-family:inherit}
+.f-edit-g{flex:1;min-width:50px;max-width:70px;padding:6px;border:1.5px solid #E8734A;border-radius:8px;font-size:13px;text-align:center;outline:none}
+.f-edit-ok{background:#E8734A;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.f-edit-no{background:none;border:1px solid #ddd;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;color:#999}
+.inline-add-form{margin-top:8px;padding:10px;background:#FFF5F0;border-radius:10px;border:1.5px dashed #E8734A}
+.meal-empty{text-align:center;color:#ddd;font-size:13px;padding:12px 0}
+
+/* ===== FAB ===== */
+#addBtn{position:fixed;bottom:100px;right:20px;width:56px;height:56px;border-radius:50%;background:#E8734A;color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 12px rgba(232,115,74,0.4);z-index:50;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+#addBtn:active{transform:scale(0.92)}
+#addBtn.hidden{display:none}
+
+/* ===== Water Overview Card ===== */
+.water-overview-card{background:#fff;border-radius:16px;padding:18px 20px;margin-bottom:12px;text-align:center;box-shadow:2px 2px 8px rgba(0,0,0,0.06);height:320px;display:flex;flex-direction:column;justify-content:flex-start;gap:1px;overflow:hidden}
+.icon-container{display:flex;justify-content:center;margin:4px 0 6px;height:105px;align-items:center;flex-shrink:0}
+.icon-svg{width:100px;height:105px;animation:iconFloat 3s ease-in-out infinite}
+.water-total{margin:0;height:48px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px}
+.water-num{font-family:'ZCOOL KuaiLe',cursive;font-size:44px;color:#1976D2;font-weight:700;line-height:1.1}
+.water-unit{font-size:16px;color:#64B5F6;margin-left:4px}
+.water-target-line{font-family:'ZCOOL KuaiLe',cursive;font-size:14px;color:#999}
+.water-progress-bg{position:relative;height:24px;border:2px solid #3D2C2C;border-radius:12px;background:#fff;overflow:hidden}
+.water-progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#4FC3F7,#1976D2);transition:width .5s ease;position:relative}
+.water-progress-fill::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 10px,rgba(255,255,255,0.12) 10px,rgba(255,255,255,0.12) 12px);border-radius:10px}
+.water-progress-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:ZCOOL KuaiLe,cursive;font-size:13px;color:#3D2C2C;z-index:2;text-shadow:1px 1px 0 #fff}
+.water-msg{font-family:'ZCOOL KuaiLe',cursive;font-size:14px;text-align:center;margin-top:8px;min-height:22px;color:#999;margin-top:auto}
+.water-msg.reminder{color:#E57373}
+.water-msg.encourage{color:#66BB6A}
+.water-msg.great{color:#1976D2}
+
+/* ===== Water Preset Buttons (card style) ===== */
+.water-presets-row{display:flex;gap:10px;margin:0 16px 10px}
+.water-preset-card{flex:1;padding:16px 8px;border:none;border-radius:16px;background:#fff;color:#1565C0;font-family:'ZCOOL KuaiLe',cursive;font-size:13px;cursor:pointer;box-shadow:2px 2px 8px rgba(0,0,0,0.06);border:2px solid #E3F2FD;-webkit-tap-highlight-color:transparent;transition:all .15s;text-align:center}
+.water-preset-card:active{background:#E3F2FD;transform:scale(0.97)}
+.water-preset-label{font-size:15px;font-weight:700;color:#1976D2}
+.wp-emoji{font-size:20px}
+
+/* ===== Water Custom Input ===== */
+.water-custom-row{display:flex;gap:8px;padding:0 16px;margin-bottom:12px}
+.water-custom-row input{flex:1;padding:12px;border:2px solid #E3F2FD;border-radius:12px;font-size:15px;text-align:center;background:#FAFCFF;color:#1565C0;outline:none;font-family:'ZCOOL KuaiLe',cursive}
+.water-custom-row input:focus{border-color:#64B5F6}
+.water-custom-btn{padding:12px 18px;border:none;border-radius:12px;background:#1976D2;color:#fff;font-family:'ZCOOL KuaiLe',cursive;font-size:15px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.water-custom-btn:active{background:#1565C0}
+
+/* ===== Water History Card ===== */
+.water-history-card{background:#fff;border-radius:16px;padding:14px 16px;margin:0 16px 12px;box-shadow:2px 2px 8px rgba(0,0,0,0.06)}
+.water-history-title{font-family:'ZCOOL KuaiLe',cursive;font-size:15px;color:#90A4AE;margin-bottom:8px}
+.water-entry{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f8f4f0}
+.water-entry:last-child{border-bottom:none}
+.water-entry-left{display:flex;align-items:center;gap:8px;font-size:14px;color:#3D2C2C}
+.water-entry-amount{font-family:'ZCOOL KuaiLe',cursive;font-size:16px;color:#1976D2;font-weight:700}
+.water-entry-del{background:none;border:none;font-size:18px;color:#B0BEC5;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent}
+.water-entry-del:active{color:#E57373}
+.water-empty{text-align:center;color:#CFD8DC;font-size:13px;padding:20px 0}
+
+/* ===== Settings ===== */
+.settings-wrap{padding:16px;padding-bottom:100px}
+.s-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:2px 2px 8px rgba(0,0,0,0.06)}
+.s-card h3{font-family:'ZCOOL KuaiLe',cursive;font-size:16px;margin-bottom:12px;color:#3D2C2C}
+.s-input{width:100%;padding:10px 14px;border:2px solid #f0e8e3;border-radius:12px;font-size:15px;outline:none;font-family:inherit;transition:border-color .15s}
+.s-input:focus{border-color:#E8734A}
+.goal-row{display:flex;gap:8px}
+.goal-item{flex:1;padding:10px;border:2px solid #f0e8e3;border-radius:10px;text-align:center;font-size:14px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;font-family:'ZCOOL KuaiLe',cursive}
+.goal-item.on{border-color:#E8734A;background:#FFF5F0;color:#E8734A}
+#goalMsg{text-align:center;padding:10px 16px;font-size:13px;color:#999;font-style:italic;min-height:20px}
+.btn-save{width:100%;padding:14px;background:#E8734A;color:#fff;border:none;border-radius:12px;font-size:16px;font-family:'ZCOOL KuaiLe',cursive;cursor:pointer;margin-top:12px;-webkit-tap-highlight-color:transparent}
+.btn-save:active{background:#d4623a}
+
+
+/* ===== Meal Cards (stickyHTML) ===== */
+.meal-sticky{position:relative;background:#fff;border-radius:16px;padding:14px 16px 14px 44px;margin:0 16px 10px;box-shadow:2px 2px 8px rgba(0,0,0,0.06)}
+.meal-del{position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;background:none;border:none;font-size:16px;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.meal-del:active{background:#ffebee;color:#E57373}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.mt{font-family:'ZCOOL KuaiLe',cursive;font-size:15px;color:#E8734A}
+.mt2{font-size:11px;color:#ccc}
+.photo-strip{display:flex;gap:6px;margin:6px 0;overflow-x:auto;padding-bottom:4px}
+.photo-strip img{width:80px;height:80px;object-fit:cover;border-radius:10px;cursor:pointer;flex-shrink:0}
+.food-list{margin:6px 0}
+.food-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #f8f4f0}
+.food-row:last-child{border-bottom:none}
+.food-text{flex:1;font-size:14px;color:#3D2C2C;cursor:pointer}
+.food-text:active{color:#E8734A}
+.food-cal{font-family:'ZCOOL KuaiLe',cursive;font-size:14px;color:#E8734A;margin-right:6px;text-align:left;min-width:50px}
+.food-acts{display:flex;gap:1px}
+.food-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:2px 4px;border-radius:4px;-webkit-tap-highlight-color:transparent;opacity:0.4;transition:opacity .15s}
+.food-row:hover .food-btn{opacity:1}
+.food-btn:active{background:#f5f5f5}
+.food-btn-del{color:#E57373}
+.meal-sub{font-family:'ZCOOL KuaiLe',cursive;font-size:13px;color:#bbb;margin-top:6px;padding-top:6px;border-top:1px solid #f8f4f0}
+.meal-actions{margin-top:8px}
+.btn-add-food{width:100%;padding:8px;background:#FFF5F0;border:1.5px dashed #E8734A;border-radius:10px;color:#E8734A;font-size:13px;font-family:'ZCOOL KuaiLe',cursive;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn-add-food:active{background:#ffe8df}/* ===== Meal Section Grid ===== */
+.meal-section{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:400px){.meal-section{grid-template-columns:1fr}}
+
+/* Sticky note colors per meal type */
+.meal-sticky[data-meal-type="breakfast"]{border-left:4px solid #FFB74D}
+.meal-sticky[data-meal-type="lunch"]{border-left:4px solid #66BB6A}
+.meal-sticky[data-meal-type="dinner"]{border-left:4px solid #5C6BC0}
+.meal-sticky[data-meal-type="snack"]{border-left:4px solid #EC407A}
+
+/* Add food button in sticky */
+.btn-add-food{margin-top:8px}
+
+/* ===== Empty state ===== */
+.empty-state{text-align:center;padding:40px 20px;color:#ddd}
+.empty-state .ico{font-size:48px;margin-bottom:12px}
+.empty-state .tx{font-family:'ZCOOL KuaiLe',cursive;font-size:15px;line-height:1.6}
+
+/* ===== Meal preview chips ===== */
+.meal-preview{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.meal-chip{flex-shrink:0;background:#fff;border-radius:12px;padding:10px 14px;box-shadow:2px 2px 6px rgba(0,0,0,0.06);min-width:90px;text-align:center}
+.meal-chip .ico{font-size:20px}
+.meal-chip .nm{font-family:'ZCOOL KuaiLe',cursive;font-size:12px;color:#999;margin-top:2px}
+.meal-chip .vl{font-family:'ZCOOL KuaiLe',cursive;font-size:14px;color:#E8734A;margin-top:2px}
+
+/* ===== Scribble divider ===== */
+.scribble{text-align:center;color:#e8e0db;font-size:16px;letter-spacing:4px;margin:12px 0;font-family:ZCOOL KuaiLe,cursive}
+.meal-grid{margin-top:10px;text-align:center}
+.meal-box{background:#fff;border-radius:14px;padding:14px;box-shadow:2px 2px 8px rgba(0,0,0,0.06);text-align:center;display:inline-block;width:48%;margin:1%;vertical-align:top;box-sizing:border-box}
+.meal-box .mb-name{font-family:ZCOOL KuaiLe,cursive;font-size:13px;color:#3D2C2C;margin-top:2px}
+.meal-box .mb-cal{font-family:ZCOOL KuaiLe,cursive;font-size:16px;color:#E8734A;margin-top:2px}
+.meal-box .mb-ico{font-size:22px}
+
+/* ===== Inline add form in meal ===== */
+.inline-add-form{margin-top:8px;padding:10px;background:#FFF5F0;border-radius:10px;border:1.5px dashed #E8734A}
+.inline-add-form input{width:100%;padding:8px 10px;border:1.5px solid #E8734A;border-radius:8px;font-size:13px;outline:none;margin-bottom:6px;font-family:inherit}
+.f-input{width:100%;padding:8px 10px;border:1.5px solid #E8734A;border-radius:8px;font-size:13px;outline:none;font-family:inherit}
+
+/* ===== Header icon fix for calendar emoji ===== */
+.header-icon{font-size:20px;line-height:1}
+
+/* ===== Water history section ===== */
+.water-section{margin:0 16px 8px}
+
+
+/* ===== Rice Bowl Animation (Food View) ===== */
+.icon-container{display:flex;justify-content:center;margin:4px 0 6px;height:105px;align-items:center;flex-shrink:0}
+.icon-svg{width:100px;max-height:105px}
+.rice-surface-wave{animation:riceWave 3s ease-in-out infinite}
+.water-surface-wave{animation:waterWave 2s ease-in-out infinite}
+@keyframes riceWave{0%,100%{transform:scaleX(1) translateY(0)}50%{transform:scaleX(1.04) translateY(-1px)}}
+@keyframes bowlBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes cupSway{0%,100%{transform:rotate(0deg)}25%{transform:rotate(0.5deg)}75%{transform:rotate(-0.5deg)}}
+@keyframes waterWave{0%,100%{transform:scaleX(1) translateY(0)}25%{transform:scaleX(1.03) translateY(0.5px)}75%{transform:scaleX(0.97) translateY(-0.5px)}}
+@keyframes wobble{0%,100%{transform:scale(1) rotate(0deg)}25%{transform:scale(1.015) rotate(0.3deg)}75%{transform:scale(0.985) rotate(-0.3deg)}}
+.wobble-circle{animation:wobble 4s ease-in-out infinite;transform-origin:50px 50px}
+
+/* ===== Module 1: Summary Grid ===== */
+.meal-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.summary-box{background:#fff;border-radius:14px;padding:14px;box-shadow:2px 2px 8px rgba(0,0,0,0.06);text-align:center}
+.summary-box .sb-ico{font-size:20px}
+.summary-box .sb-name{font-family:'ZCOOL KuaiLe',cursive;font-size:13px;color:#3D2C2C;margin-top:2px}
+.summary-box .sb-cal{font-family:'ZCOOL KuaiLe',cursive;font-size:16px;color:#E8734A;margin-top:2px}
+
+/* ===== Module 2: Meal List ===== */
+.meal-list{margin-top:4px}
+/* ===== Calendar Drawer ===== */
+.cal-drawer{position:fixed;inset:0;z-index:9000;display:none;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center}
+.cal-drawer.on{display:flex}
+.cal-drawer-inner{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;animation:slideUp .25s ease;padding:16px 12px}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.cal-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #f0e8e3}
+.cal-drawer-header button{background:none;border:none;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:8px;-webkit-tap-highlight-color:transparent}
+.cal-drawer-header button:active{background:#f5f5f5}
+.cal-nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 16px}
+.cal-nav button{background:none;border:none;font-size:20px;cursor:pointer;color:#3D2C2C;padding:4px 12px;border-radius:8px;-webkit-tap-highlight-color:transparent;font-family:'ZCOOL KuaiLe',cursive}
+.cal-nav button:active{background:#f5f5f5}
+#monLabel{font-family:'ZCOOL KuaiLe',cursive;font-size:16px;min-width:100px;text-align:center}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);padding:8px 12px 4px;text-align:center;font-size:12px;color:#bbb}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:8px 12px 24px;gap:8px 4px}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;position:relative;margin:1px;transition:all .2s;background:#fff;font-size:14px;font-family:'ZCOOL KuaiLe',cursive}
+.cal-cell.empty{cursor:default;background:transparent}
+.cal-cell .dn{font-size:14px;z-index:1;position:relative}
+.cal-cell.today{box-shadow:0 0 0 2px #E8734A}
+.cal-cell.future{color:#ccc;cursor:default;pointer-events:none;background:#f5f5f5!important}
+.cal-ring-wrap{position:absolute;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;z-index:2}
+.cal-cell.has-rec .cal-ring-wrap{display:flex}
+.cal-ring svg{display:block}
+.faint-ring svg{opacity:0.5}
+
+/* ===== Add Meal Modal ===== */
+.modal-bg{position:fixed;inset:0;z-index:9000;display:none;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center}
+.modal-bg.on{display:flex}
+.modal-sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:80vh;padding:20px 16px 30px;overflow-y:auto;animation:slideUp .25s ease}
+.modal-sheet h3{font-family:'ZCOOL KuaiLe',cursive;font-size:16px;margin-bottom:14px;text-align:center}
+.type-row{display:flex;gap:8px;margin-bottom:14px}
+.type-chip{flex:1;padding:10px;border:2px solid #f0e8e3;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;text-align:center;font-family:'ZCOOL KuaiLe',cursive;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.type-chip.on{border-color:#E8734A;background:#FFF5F0;color:#E8734A}
+.modal-sheet input[type=text],.modal-sheet input[type=number]{width:100%;padding:12px;border:2px solid #f0e8e3;border-radius:12px;font-size:15px;outline:none;margin-bottom:10px;font-family:inherit}
+.modal-sheet input:focus{border-color:#E8734A}
+.form-row{margin-bottom:12px}
+.form-label{display:block;font-size:13px;color:#888;margin-bottom:4px;font-family:inherit}
+.gender-row{display:flex;gap:10px}
+.gender-opt{flex:1;text-align:center;padding:10px;border:2px solid #f0e8e3;border-radius:12px;cursor:pointer;font-size:15px;transition:.15s;-webkit-tap-highlight-color:transparent}
+.gender-opt.on{border-color:#E8734A;background:#FFF5F0;color:#E8734A}
+#recResult{background:#f8f4f0;border-radius:12px;margin-top:12px;padding:14px}
+.photo-btn{width:100%;padding:14px;background:linear-gradient(135deg,#FFF5F0,#FFEDE5);border:2px solid #E8734A;border-radius:12px;color:#E8734A;font-size:15px;cursor:pointer;margin-bottom:14px;font-family:'ZCOOL KuaiLe',cursive;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:bold}
+.photo-btn:active{background:#ffe0d0;transform:scale(0.98)}
+.add-row-btn{width:100%;padding:10px;background:#fff;border:2px dashed #f0e0d5;border-radius:10px;color:#bbb;font-size:14px;cursor:pointer;margin-bottom:10px;font-family:'ZCOOL KuaiLe',cursive;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:6px}
+.add-row-btn:active{background:#faf7f5;border-color:#E8734A;color:#E8734A}
+.ai-btn:active{background:#ffe8df}
+.ai-result{background:#f8f8f8;border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px;color:#666;display:none}
+.add-btn{width:100%;padding:14px;background:#E8734A;color:#fff;border:none;border-radius:12px;font-size:16px;font-family:'ZCOOL KuaiLe',cursive;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.add-btn:active{background:#d4623a}
+
+/* ===== Add Modal Food Rows ===== */
+.food-add-row input{font-family:'ZCOOL KuaiLe',cursive;font-size:14px}
+.fr-del{display:none}
+.food-add-row:not(:first-child) .fr-del{display:inline}
+/* ===== Toast ===== */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:20px;color:#fff;font-size:14px;z-index:9999;display:none;pointer-events:none;font-family:'ZCOOL KuaiLe',cursive}
+.toast.ok{background:#4CAF50}
+.toast.show{display:block}
+.toast.err{background:#f44336}
+
+/* ===== Utility ===== */
+.hidden{display:none!important}
+
+  </style>
+<style>.progress-wrap{height:24px!important;min-height:24px!important}.water-progress-bg{margin-top:2px!important}.icon-container{height:105px!important;flex-shrink:0!important}</style></head>
+<body>
+  <div id="app">
+    <div id="noteCard" style="display:none"></div>
+    <div id="addActions" style="display:none"></div>
+    <div id="photoBox" style="display:none"></div>
+    <!-- ===== 吃多少 ===== -->
+    <div id="viewToday" class="view on">
+      <div class="header">
+        <span class="header-spacer"></span>
+        <h1>吃多少</h1>
+        <button class="header-icon" onclick="toggleCalDrawer()">📅</button>
+      </div>
+      <div class="overview-section">
+        <div id="todayContent"></div>
+      </div>
+    </div>
+        <!-- ===== 喝多少 ===== -->
+    <div id="viewWater" class="view">
+  <div class="header">
+    <span class="header-spacer"></span>
+    <h1>喝多少</h1>
+    <button class="header-icon" onclick="toggleCalDrawer()">📅</button>
+  </div>
+  <div class="overview-section">
+    <!-- Water overview card -->
+    <div class="water-overview-card">
+      <div class="date-big"><span class="date-arrow" onclick="waterNavDate(-1)">‹</span><span class="water-date" id="waterDate"></span><span class="date-arrow" onclick="waterNavDate(1)">›</span></div>
+      <div class="icon-container">
+        <svg class="icon-svg" viewBox="0 0 100 100" id="cupSvg">
+          <defs><linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1976D2"/><stop offset="100%" stop-color="#1565C0"/></linearGradient><clipPath id="cupClip"><path d="M50,10 C73.2,10 90,26.8 90,50 C90,73.2 73.2,90 50,90 C26.8,90 10,73.2 10,50 C10,26.8 26.8,10 50,10 Z"/></clipPath></defs>
+          <path d="M50,10 C73.2,10 90,26.8 90,50 C90,73.2 73.2,90 50,90 C26.8,90 10,73.2 10,50 C10,26.8 26.8,10 50,10 Z" fill="#f5f1ec" stroke="#3D2C2C" stroke-width="2.5" stroke-linejoin="round"/>
+          <g class="wobble-circle"><g clip-path="url(#cupClip)"><rect id="waterFill" x="0" y="0" width="100" height="0" fill="url(#waterGrad)" opacity="0.85"/><ellipse id="waterSurface" cx="50" cy="90" rx="42" ry="0" fill="rgba(255,255,255,0.2)" clip-path="url(#cupClip)" class="water-surface-wave"/></g></g>
+          <g id="dropIcon">
+            <path d="M50,22 C50,22 32,44 32,54 C32,64 42,72 50,72 C58,72 68,64 68,54 C68,44 50,22 50,22 Z" fill="none" stroke="#3D2C2C" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M42,50 Q46,46 50,50" fill="none" stroke="#3D2C2C" stroke-width="2" stroke-linecap="round"/>
+            <path d="M40,54 Q44,50 48,54" fill="none" stroke="#3D2C2C" stroke-width="1.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <div class="water-total"><span class="water-num" id="waterTotal">0</span><span class="water-unit">ml</span></div>
+      <div class="water-target-line">目标 <span id="waterTargetDisplay">2000</span> ml</div>
+      <div class="water-progress-bg"><div class="water-progress-fill" id="waterProgressFill" style="width:0%"></div><div class="progress-text" id="waterProgressText">0%</div></div>
+      <div class="water-msg" id="waterMsg"></div>
+    </div>
+    <!-- Preset buttons -->
+    <div class="water-presets-row">
+      <button class="water-preset-card" onclick="addWater(250)"><span class="wp-emoji">🥃</span><br><span class="water-preset-label">250ml</span></button>
+      <button class="water-preset-card" onclick="addWater(500)"><span class="wp-emoji">🍼</span><br><span class="water-preset-label">500ml</span></button>
+    </div>
+    <!-- Custom input -->
+    <div class="water-custom-row">
+      <input type="number" id="waterCustom" placeholder="自定义 ml" min="1" max="5000">
+      <button class="water-custom-btn" onclick="addWaterCustom()">＋ 添加</button>
+    </div>
+    <!-- Water history -->
+    <div class="water-history-card" id="waterHistory">
+      <div class="water-history-title">💧 今日饮水记录</div>
+      <div id="waterList"></div>
+    </div>
+  </div>
+</div>
+    <!-- ===== 设置 ===== -->
+    <div id="viewSettings" class="view">
+      <div class="header">
+        <span class="header-spacer"></span>
+        <h1>设置</h1>
+        <span class="header-spacer"></span>
+      </div>
+      <div class="settings-wrap">
+                <div class="s-card"><h3>目标类型</h3><div class="goal-row" id="goalRow">
+          <div class="goal-item on" data-t="cutting" data-c="1500" data-w="2500" onclick="pickGoal(this)">🔥 减脂</div>
+          <div class="goal-item" data-t="maintain" data-c="2000" data-w="2000" onclick="pickGoal(this)">⚖️ 保持</div>
+          <div class="goal-item" data-t="bulking" data-c="2800" data-w="2500" onclick="pickGoal(this)">💪 增肌</div>
+        </div>
+        <p id="goalMsg" style="text-align:center;padding:12px 16px;font-size:14px;color:#888;font-style:italic;transition:opacity .3s">🔥 减脂期管住嘴迈开腿，你行的！</p></div>
+
+        <div class="s-card"><h3>📋 个人信息</h3>
+          <div class="form-row">
+            <label class="form-label">性别</label>
+            <div class="gender-row">
+              <div class="gender-opt on" data-g="male" onclick="pickGender(this)">👨 男</div>
+              <div class="gender-opt" data-g="female" onclick="pickGender(this)">👩 女</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">身高 (cm)</label>
+            <input class="s-input" id="inpHeight" type="number" placeholder="170" oninput="calcRecommend()">
+          </div>
+          <div class="form-row">
+            <label class="form-label">当前体重 (kg)</label>
+            <input class="s-input" id="inpWeight" type="number" placeholder="65" oninput="calcRecommend()">
+          </div>
+          <div class="form-row">
+            <label class="form-label">期望体重 (kg)</label>
+            <input class="s-input" id="inpTargetWeight" type="number" placeholder="60" oninput="calcRecommend()">
+          </div>
+          <div id="recResult" style="text-align:center;padding:14px 0;display:none">
+            <div style="font-size:15px;color:#3D2C2C;font-weight:bold">🎯 建议每日摄入 <span id="recCal">--</span> 卡</div>
+            <div style="font-size:13px;color:#888;margin-top:4px">💧 建议每日饮水 <span id="recWater">--</span> ml</div>
+          </div>
+        </div>
+
+        <div class="s-card"><h3>🍽️ 目标摄入</h3>
+          <label class="form-label">🔥 每日卡路里目标 (cal)</label>
+          <input class="s-input" id="inpTarget" type="number" placeholder="1500">
+          <label class="form-label" style="margin-top:10px">💧 每日饮水目标 (ml)</label>
+          <input class="s-input" id="inpWaterTarget" type="number" placeholder="2500">
+        </div>
+                <button class="btn-save" onclick="saveSettings()">保存</button>
+              </div>
+    </div>
+    <!-- ===== Calendar Drawer ===== -->
+    <div id="calDrawer" class="cal-drawer" onclick="if(event.target===this)closeCalDrawer()">
+      <div class="cal-drawer-inner">
+        <div class="cal-drawer-header">
+          <button onclick="closeCalDrawer()">✕</button>
+          <span style="font-family:ZCOOL KuaiLe,cursive;font-size:16px;color:#3D2C2C" id="calTitle">选择日期</span>
+          <span style="width:40px"></span>
+        </div>
+        <div class="cal-nav">
+          <button onclick="chgMonth(-1)">‹</button>
+          <span id="monLabel"></span>
+          <button onclick="chgMonth(1)">›</button>
+        </div>
+        <div class="cal-weekdays"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+    </div>
+    <!-- ===== Add Meal Modal ===== -->
+    <div id="addModal" class="modal-bg" onclick="if(event.target===this)closeAdd()">
+      <div class="modal-sheet">
+        <h3>添加食物</h3>
+        <div class="type-row" id="typeRow">
+          <div class="type-chip on" data-t="breakfast" onclick="pickType(this)">🌅 早餐</div>
+          <div class="type-chip" data-t="lunch" onclick="pickType(this)">☀️ 午餐</div>
+          <div class="type-chip" data-t="dinner" onclick="pickType(this)">🌙 晚餐</div>
+          <div class="type-chip" data-t="snack" onclick="pickType(this)">🍪 加餐</div>
+        </div>
+        
+        <!-- Photo upload area -->
+        <div id="photoPreview" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
+        <button class="photo-btn" onclick="document.getElementById('photoInput').click()">📷 拍照 / 🖼️ 从相册选择</button>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="onPhotoSelect(this)">
+        
+        <div id="foodRows" style="display:flex;flex-direction:column;gap:8px">
+          <div class="food-add-row" id="foodRow_0">
+            <div style="display:flex;gap:6px;align-items:center">
+              <input type="text" class="fr-name" placeholder="食物名称（如：米饭、鸡蛋）" style="flex:1" oninput="updateModalCal()">
+              <input type="number" class="fr-grams" placeholder="克" value="100" style="width:55px" oninput="updateModalCal()">
+              <span style="font-size:14px;color:#666;align-self:center;margin-left:2px;font-weight:500">g</span>
+              <span class="fr-cal" style="color:#E8734A;font-weight:700;font-size:14px;min-width:50px;text-align:right">0卡</span>
+              <button class="fr-del" onclick="removeFoodRow(0)" style="display:none;background:none;border:none;color:#999;font-size:18px;cursor:pointer;padding:0 4px">×</button>
+            </div>
+          </div>
+        </div>
+        <button class="add-row-btn" onclick="addFoodRow()">＋ 加一种食物</button>
+        <div class="ai-result" id="aiResult" style="display:none;margin-top:8px">
+          <span id="aiResultText"></span>
+          <span id="aiLoading" style="color:#E8734A">🔍 AI 识别中...</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <span style="font-size:13px;color:#999">合计</span>
+          <span id="calDisplay" style="color:#E8734A;font-weight:700;font-size:16px;flex:1;text-align:right">0 卡</span>
+        </div>
+        <button class="add-btn" onclick="saveMeal()">＋ 添加</button>
+      </div>
+    </div>
+
+      <!-- Photo Viewer Modal -->
+    <div id="photoModal" class="modal-bg" onclick="if(event.target===this)this.classList.remove('on')" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:center;height:100%;background:rgba(0,0,0,0.9)">
+        <img id="fullPhoto" src="" style="max-width:100%;max-height:100%;object-fit:contain">
+</div>
+</div>
+</div>
+  <div id="footer">
+    <button class="on" onclick="showView('viewToday')"><span class="fi"><svg width="46" height="46" viewBox="0 0 100 100"><line x1="42" y1="36" x2="42" y2="52" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M34,32 L38,40" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M38,32 L38,40" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M42,32 L38,40" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><line x1="58" y1="34" x2="58" y2="52" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M56,30 L59,38" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M36,48 Q50,44 64,48" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M30,52 Q50,48 70,52" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.5"/></svg></span>吃多少</button>
+    <button onclick="showView('viewWater')"><span class="fi"><svg width="36" height="36" viewBox="0 0 100 100"><path d="M50,20 C50,20 32,42 32,52 C32,62 42,70 50,70 C58,70 68,62 68,52 C68,42 50,20 50,20 Z" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/></svg></span>喝多少</button>
+    <button onclick="showView('viewSettings')"><span class="fi"><svg width="36" height="36" viewBox="0 0 100 100"><path d="M78,50 C78,63.8 66.8,75 53,75 L47,75 C33.2,75 22,63.8 22,50 C22,36.2 33.2,25 47,25 L53,25 C66.8,25 78,36.2 78,50 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="50" r="14" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="50" cy="50" r="5" fill="currentColor"/></svg></span>设置</button>
+  </div>
+  <button id="addBtn" onclick="openAdd()">＋</button>
+  <div id="toast" class="toast hidden"></div>
+  <script>
+
+/* ===== State ===== */
+var D = {};
+var today = fmtDate(new Date());
+var backFromCalendar = false;
+var curType = 'breakfast';
+var curPhoto = '';
+  var uploadedPhotos = [];
+var rowCount = 0;
+var MEAL_NAME = {breakfast:'早餐',lunch:'午餐',dinner:'晚餐',snack:'加餐'};
+var MEAL_ICO = {breakfast:'🌅',lunch:'☀️',dinner:'🌙',snack:'🍪'};
+var STEPFUN_API_KEY = '7oK5MA5FWcU7dhsotEl3XLalcB4YPKoceeyQwqJipEMB4PgMsXsDuodRwvcEhMTU0';
+var CAL_DB = {
+  // === 主食 ===
+  '米饭':{100:116,150:174,200:232},'白米饭':{100:116,150:174,200:232},
+  '米饭(小碗)':{150:174},'米饭(大碗)':{200:232},
+  '糙米饭':{100:111},'稀饭':{100:30},'粥':{100:30},
+  '面条':{100:174,150:261},'拉面':{100:298,150:447},
+  '方便面':{100:470},'泡面':{100:470},
+  '炒饭':{100:186},'蛋炒饭':{100:186},'咖喱饭':{100:160},
+  '石锅拌饭':{300:500},'寿司':{100:150},'三文治':{100:250},
+  '意面':{100:160},'乌冬面':{100:127},'河粉':{100:200},
+  '馒头':{100:221},'花卷':{100:217},'包子':{100:227},
+  '油条':{100:388},'葱油饼':{100:280},'手抓饼':{100:290},
+  '煎饼果子':{100:250},'肉夹馍':{100:260},'凉皮':{100:120},
+  '面包':{100:265},'全麦面包':{100:250},'吐司':{100:250},
+  '燕麦':{50:190,100:380},'麦片':{50:190},
+  '米粉':{100:150},'米线':{100:110},'肠粉':{100:170},
+  '饺子':{100:240,300:720},'馄饨':{100:275},'云吞':{100:275},
+  '粽子':{100:200},'汤圆':{100:250},'年糕':{100:200},
+  
+  // === 肉禽 ===
+  '鸡蛋':{50:78,100:155},'水煮蛋':{50:78},'煎蛋':{50:100,100:200},
+  '茶叶蛋':{50:90},'炒蛋':{100:180},
+  '鸡胸肉':{100:133,150:200,200:266},'炒鸡胸肉':{100:180},
+  '鸡腿':{100:180},'炸鸡腿':{100:250},'烤鸡':{100:200},
+  '炸鸡':{100:290,150:435},'鸡翅':{100:250},
+  '猪肉':{100:242,150:363},'五花肉':{100:349},
+  '瘦肉':{100:143},'排骨':{100:278},
+  '红烧肉':{100:350},'回锅肉':{100:230},'青椒炒肉':{100:130,150:195},
+  '水煮肉片':{100:180},'糖醋排骨':{100:200},'鱼香肉丝':{100:120},
+  '牛肉':{100:125,150:188},'牛腩':{100:250},'牛排':{100:271},
+  '肥牛':{100:150},'牛肉面':{100:120},
+  '羊肉':{100:203},'羊排':{100:250},
+  '鸭肉':{100:180},'烤鸭':{100:250},'鸭腿':{100:200},
+  '鹅肉':{100:200},
+  
+  // === 水产 ===
+  '鱼肉':{100:100,150:150},'清蒸鱼':{100:100},
+  '三文鱼':{100:208,150:312},'鲈鱼':{100:105},
+  '带鱼':{100:127},'鲫鱼':{100:108},
+  '铁板鱼':{100:150},'烤鱼':{100:180},
+  '酸菜鱼':{100:100},'水煮鱼':{100:120},
+  '虾':{100:85},'白灼虾':{100:85},'龙虾':{100:100},
+  '螃蟹':{100:95},'皮皮虾':{100:100},
+  '鱿鱼':{100:75},'章鱼':{100:82},
+  '蛤蜊':{100:62},'生蚝':{100:80},
+  '干锅牛蛙':{100:150},
+  
+  // === 蔬菜 ===
+  '西兰花':{100:36,150:54},'花菜':{100:25},
+  '炒青菜':{100:80,150:120},'青菜':{100:25},
+  '白菜':{100:13},'菠菜':{100:23},
+  '番茄':{100:18},'番茄炒蛋':{100:85,150:128},
+  '黄瓜':{100:16},'胡萝卜':{100:41},
+  '土豆':{100:77,150:116},'炒土豆丝':{100:115,150:173},
+  '红薯':{100:86,150:129},'紫薯':{100:130},
+  '玉米':{100:86,200:200},'青椒':{100:22},
+  '茄子':{100:25},'地三鲜':{100:120},
+  '豆角':{100:31},'四季豆':{100:31},
+  '莲藕':{100:70},'山药':{100:57},
+  '蘑菇':{100:22},'香菇':{100:20},
+  '海带':{100:70},'紫菜':{100:250},
+  '冬瓜':{100:12},'丝瓜':{100:20},
+  '苦瓜':{100:19},'南瓜':{100:25},
+  '生菜':{100:15},'油麦菜':{100:15},
+  '韭菜':{100:30},'芹菜':{100:14},
+  '洋葱':{100:40},'大蒜':{100:150},
+  '生姜':{100:80},'辣椒':{100:40},
+  '酸辣汤':{100:60},'紫菜蛋花汤':{100:30},'番茄鸡蛋汤':{100:45},
+  '排骨汤':{100:80},'冬瓜排骨汤':{100:45},
+  '麻婆豆腐':{100:110,150:165},
+  
+  // === 豆制品 ===
+  '豆腐':{100:81,150:122},'嫩豆腐':{100:57},
+  '老豆腐':{100:98},'豆干':{100:140},
+  '腐竹':{100:459},'豆皮':{100:260},
+  '豆浆':{250:120},'豆腐脑':{100:15},
+  '毛豆':{100:131},'黄豆':{100:390},
+  
+  // === 水果 ===
+  '苹果':{100:52,200:104},'香蕉':{100:89,120:107},
+  '西瓜':{100:30,200:60},'葡萄':{100:69},
+  '橙子':{100:47},'橘子':{100:44},
+  '草莓':{100:32},'蓝莓':{100:57},
+  '芒果':{100:35},'榴莲':{100:147},
+  '樱桃':{100:63},'猕猴桃':{100:61},
+  '柚子':{100:42},'菠萝':{100:50},
+  '哈密瓜':{100:34},'桃子':{100:39},
+  '李子':{100:38},'石榴':{100:63},
+  '椰子':{100:354},'椰子水':{500:230},
+  '牛油果':{100:160},'火龙果':{100:50},
+  '鲜榨果汁':{500:200},'柠檬':{100:29},
+  
+  // === 饮品类 ===
+  '牛奶':{250:165},'全脂牛奶':{250:165},'脱脂牛奶':{250:90},
+  '酸奶':{200:120},'希腊酸奶':{100:60},
+  '奶茶':{500:250},'珍珠奶茶':{500:300},
+  '泰式奶茶':{500:220},'柠檬茶':{500:180},
+  '美式咖啡':{500:15},'拿铁':{500:220},'卡布奇诺':{500:200},
+  '咖啡(黑)':{100:3},'速溶咖啡':{100:35},
+  '可乐':{330:140,500:215},'雪碧':{330:140,500:200},
+  '橙汁':{500:220},'苹果汁':{500:240},
+  '啤酒':{500:200},'红酒':{150:120},'热红酒':{300:250},
+  '白酒':{100:300},'威士忌':{100:250},
+  '矿泉水':{500:0},'气泡水':{500:0},
+  
+  // === 小吃/快餐 ===
+  '汉堡':{100:295},'巨无霸':{100:290},
+  '披萨':{100:266},'炸鸡':{100:290,150:435},
+  '薯条':{100:312,200:380},'炸薯条':{100:312},
+  '炸鸡块':{100:300},'鸡米花':{100:300},
+  '热狗':{100:250},'三明治':{100:250},
+  '关东煮':{100:50},'章鱼小丸子':{100:180},
+  '臭豆腐':{100:100},'烤冷面':{100:220},
+  
+  // === 火锅/烧烤/聚餐 ===
+  '火锅':{100:200,800:800},'麻辣烫':{100:120,300:360},
+  '冒菜':{100:130,300:390},'串串':{100:180},
+  '烧烤':{100:250,600:600},'烤肉':{100:280},
+  '寿喜烧':{100:150},'部队锅':{100:130},
+  
+  // === 东南亚 ===
+  '冬阴功汤':{100:90,300:270},'打抛饭':{100:160,300:480},
+  '芒果糯米饭':{200:350},'青木瓜沙拉':{100:120},
+  '海南鸡饭':{300:450},'沙爹串':{100:250},
+  '咖喱鸡':{100:165},'咖喱牛腩':{100:180},
+  '越南河粉':{100:90},'越南春卷':{100:120},
+  
+  // === 烘焙/甜点 ===
+  '蛋糕':{100:350},'巧克力':{100:546},
+  '冰淇淋':{100:200},'冰棍':{100:100},
+  '蛋挞':{100:250},'月饼':{100:400},
+  '粽子':{100:200},'汤圆':{100:250},
+  '布丁':{100:120},'双皮奶':{100:100},
+  
+  // === 调料/其他 ===
+  '沙拉酱':{20:130},'番茄酱':{20:15},
+  '酱油':{15:10},'醋':{15:5},
+  '食用油':{15:135},'花生油':{15:135},
+  '白糖':{10:40},'蜂蜜':{15:46},
+  '辣椒油':{15:135},'芝麻酱':{15:90},
+  '老干妈':{15:25},'沙拉':{100:120,150:180}
+};
+
+// Cache for online calorie lookups
+var onlineCalCache = {};
+
+/* ===== Data ===== */
+function lookupCalorieOnline(name, grams) {
+  return new Promise(function(resolve) {
+    if (onlineCalCache[name]) { resolve(onlineCalCache[name]); return; }
+    var url = 'https://world.openfoodfacts.org/api/v2/search?q=' +
+      encodeURIComponent(name) + '&page_size=5';
+    fetch(url, {headers: {'Accept': 'application/json'}})
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var calPer100 = null;
+        if (data.products && data.products.length > 0) {
+          for (var i = 0; i < data.products.length; i++) {
+            var p = data.products[i];
+            var n = p.nutriments || {};
+            var energy = n['energy-kcal_100g'] || n['energy-kcal/100g'] || n['energy-kcal'];
+            if (energy && energy > 0) { calPer100 = Math.round(energy); break; }
+          }
+        }
+        if (calPer100) { onlineCalCache[name] = calPer100; resolve(calPer100); }
+        else resolve(null);
+      })
+      .catch(function() { resolve(null); });
+  });
+}
+
+function calcRowCal(name, grams) {
+  name = (name || '').toLowerCase();
+  var found = null;
+  // Tier 1: Built-in database
+  for (var k in CAL_DB) {
+    if (name.indexOf(k) >= 0 || k.indexOf(name) >= 0) { found = CAL_DB[k]; break; }
+  }
+  if (found) {
+    var keys = Object.keys(found).map(Number).sort(function(a,b){return a-b});
+    var best = keys[0], bestD = Infinity;
+    keys.forEach(function(g) { if (Math.abs(g - grams) < bestD) { bestD = Math.abs(g - grams); best = g; } });
+    var cal = found[best];
+    if (best !== grams && grams > 0) cal = Math.round(cal * grams / best);
+    return cal;
+  }
+  // Tier 2: Online cache
+  if (onlineCalCache[name]) { return Math.round(onlineCalCache[name] * grams / 100); }
+  // Tier 3: Default
+  return Math.round(grams * 1.5);
+}
+
+/* ===== IndexedDB Storage ===== */
+var DB_NAME = 'DietTracker';
+var DB_VERSION = 1;
+var STORE_NAME = 'records';
+var _db = null;
+
+function openDB() {
+  return new Promise(function(resolve, reject) {
+    if (_db) return resolve(_db);
+    var req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
+      }
+    };
+    req.onsuccess = function(e) { _db = e.target.result; resolve(_db); };
+    req.onerror = function(e) { reject(e.target.error); };
+  });
+}
+
+function saveData() {
+  var records = D.records || {};
+  var settings = D.settings || {};
+  // Save settings to localStorage
+  try {
+    localStorage.setItem('dietSettings', JSON.stringify(settings));
+  } catch(e) {
+    toast('⚠️ 设置保存失败', 'err');
+  }
+  // Save records to IndexedDB
+  openDB().then(function(db) {
+    var tx = db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).put(records, 'records');
+    return new Promise(function(r) { tx.oncomplete = r; });
+  }).catch(function(e) {
+    console.error('IDB save failed:', e);
+    toast('💾 数据保存失败，请重试', 'err');
+  });
+}
+
+async function loadData() {
+  // Load settings from localStorage
+  try {
+    var sv = localStorage.getItem('dietSettings');
+    if (sv) D.settings = JSON.parse(sv);
+    else D.settings = {dailyCalorieTarget:1800,goalType:'cutting',dailyWaterTarget:2000};
+  } catch(e) {
+    D.settings = {dailyCalorieTarget:1800,goalType:'cutting',dailyWaterTarget:2000};
+  }
+  if (!D.settings.targetHistory) D.settings.targetHistory = {};
+  if (!D.settings._defaultTarget) D.settings._defaultTarget = D.settings.dailyCalorieTarget;
+  if (!D.settings.dailyWaterTarget) D.settings.dailyWaterTarget = 2000;
+  if (!D.settings.gender) D.settings.gender = 'male';
+  // Load personal info into inputs
+  if (D.settings.gender) { _pendingGender = D.settings.gender; }
+  var hInp = document.getElementById('inpHeight');
+  var wInp = document.getElementById('inpWeight');
+  var twInp = document.getElementById('inpTargetWeight');
+  if (hInp && D.settings.height) hInp.value = D.settings.height;
+  if (wInp && D.settings.currentWeight) wInp.value = D.settings.currentWeight;
+  if (twInp && D.settings.targetWeight) twInp.value = D.settings.targetWeight;
+  // Update gender UI
+  var gOpt = document.querySelector('.gender-opt[data-g="' + D.settings.gender + '"]');
+  document.querySelectorAll('.gender-opt').forEach(function(c) { c.classList.remove('on'); });
+  if (gOpt) gOpt.classList.add('on');
+  // Load records from IndexedDB
+  try {
+    var db = await openDB();
+    var tx = db.transaction(STORE_NAME, 'readonly');
+    var req = tx.objectStore(STORE_NAME).get('records');
+    D.records = await new Promise(function(resolve) {
+      req.onsuccess = function() { resolve(req.result || {}); };
+      req.onerror = function() { resolve({}); };
+    });
+  } catch(e) {
+    D.records = {};
+  }
+    document.getElementById('inpTarget').value = D.settings.dailyCalorieTarget || 1800;
+  var wtInp = document.getElementById('inpWaterTarget');
+  if (wtInp) wtInp.value = D.settings.dailyWaterTarget || 2000;
+  updGoalUI();
+renderToday();
+  waterDate = today;
+  waterTarget = D.settings.dailyWaterTarget || 2000;
+  renderCal();
+}
+
+function updGoalUI() {
+  var gt = _pendingGoal || D.settings.goalType || 'cutting';
+  document.querySelectorAll('#goalRow .goal-item').forEach(function(c) {
+    c.classList.toggle('on', c.dataset.t === gt);
+  });
+  var msg = document.getElementById("goalMsg");
+  if (msg) {
+    var msgs = {cutting: "🔥 减脂期管住嘴迈开腿，你行的！", maintain: "⚖️ 保持住平衡，健康是最好的状态", bulking: "💪 增肌期多吃多练，肌肉在生长！"};
+    msg.textContent = msgs[gt] || "";
+  }
+}
+var _pendingGoal = '';
+var _pendingGender = '';
+function pickGender(el) {
+  var g = el.dataset.g;
+  if (!g) return;
+  _pendingGender = g;
+  document.querySelectorAll('.gender-opt').forEach(function(c) {
+    c.classList.toggle('on', c.dataset.g === g);
+  });
+  calcRecommend();
+}
+
+function calcRecommend() {
+  var gender = _pendingGender || (D.settings && D.settings.gender) || 'male';
+  var h = parseFloat(document.getElementById('inpHeight').value) || 0;
+  var w = parseFloat(document.getElementById('inpWeight').value) || 0;
+  var tw = parseFloat(document.getElementById('inpTargetWeight').value) || 0;
+  var recEl = document.getElementById('recResult');
+  var calEl = document.getElementById('recCal');
+  var waterEl = document.getElementById('recWater');
+
+  if (!h || !w) { if (recEl) recEl.style.display = 'none'; return; }
+
+  // Mifflin-St Jeor BMR
+  var bmr = 10 * w + 6.25 * h - 5 * 30 + (gender === 'female' ? -161 : 5); // age=30 as default
+  var activityFactor = 1.55; // moderate activity
+
+  var gt = _pendingGoal || (D.settings && D.settings.goalType) || 'cutting';
+  var tdee = bmr * activityFactor;
+  var targetCal;
+
+  if (gt === 'cutting') targetCal = Math.round(tdee - 500);
+  else if (gt === 'bulking') targetCal = Math.round(tdee + 300);
+  else targetCal = Math.round(tdee);
+
+  // Clamp to safe range
+  targetCal = Math.max(1200, Math.min(targetCal, 4000));
+
+  var water = Math.round(w * 35); // 35ml per kg
+
+  if (recEl) { recEl.style.display = 'block'; }
+  if (calEl) calEl.textContent = targetCal;
+  if (waterEl) waterEl.textContent = water;
+  // Auto-fill target inputs
+  var ctInp = document.getElementById('inpTarget');
+  var wtInp = document.getElementById('inpWaterTarget');
+  if (ctInp) ctInp.value = targetCal;
+  if (wtInp) wtInp.value = water;
+}
+function pickGoal(el) {
+  var t = el.dataset.t;
+  if (!t) return;
+  _pendingGoal = t;
+  updGoalUI();
+  var ctInp = document.getElementById('inpTarget');
+  var wtInp = document.getElementById('inpWaterTarget');
+  if (ctInp) ctInp.value = el.dataset.c || 1800;
+  if (wtInp) wtInp.value = el.dataset.w || 2000;
+  calcRecommend();
+}
+var goalRow = document.getElementById('goalRow');
+if (goalRow) {
+  goalRow.addEventListener('click', function(e) {
+    var item = e.target.closest('.goal-item');
+    if (item && item.dataset.t) {
+      pickGoal(item);
+    }
+  });
+}
+
+// Gender picker
+var genderItems = document.querySelectorAll('.gender-opt');
+genderItems.forEach(function(el) {
+  el.addEventListener('click', function() { pickGender(el); });
+});
+
+/* ===== Today ===== */
+function renderToday() {
+  var el = document.getElementById('todayContent');
+  var day = D.records[today];
+  var tgt = getTargetForDate(today);
+  var total = 0;
+  if (day && day.meals) { day.meals.forEach(function(m) { total += (m.totalCalories || 0); }); }
+  var pct = total / tgt;
+  var over = total > tgt;
+  var d = new Date(today);
+  var wd = ['日','一','二','三','四','五','六'];
+  // Rice bowl fill
+
+  var h = '<div class="overview-card">';
+  h += '<div class="date-big"><span class="date-arrow" onclick="navDate(-1)">‹</span><span class="date-text">' + d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日 周' + wd[d.getDay()] + '</span><span class="date-arrow" onclick="navDate(1)">›</span></div>';
+  h += '<div class="icon-container"><svg class="icon-svg" viewBox="0 0 100 100" id="bowlSvg"><defs><linearGradient id="riceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8734A"/><stop offset="100%" stop-color="#F4A261"/></linearGradient><clipPath id="bowlClip"><path d="M50,10 C73.2,10 90,26.8 90,50 C90,73.2 73.2,90 50,90 C26.8,90 10,73.2 10,50 C10,26.8 26.8,10 50,10 Z"/></clipPath></defs><path d="M50,10 C73.2,10 90,26.8 90,50 C90,73.2 73.2,90 50,90 C26.8,90 10,73.2 10,50 C10,26.8 26.8,10 50,10 Z" fill="#f5f1ec" stroke="#3D2C2C" stroke-width="2.5" stroke-linejoin="round"/><g class="wobble-circle"><g clip-path="url(#bowlClip)"><rect id="riceFill" x="0" y="0" width="100" height="0" fill="url(#riceGrad)" opacity="0.85"/><ellipse id="riceSurface" cx="50" cy="90" rx="42" ry="0" fill="rgba(255,255,255,0.2)" clip-path="url(#bowlClip)" class="rice-surface-wave"/></g></g><g id="riceIcon"><line x1="42" y1="36" x2="42" y2="56" stroke="#3D2C2C" stroke-width="2.5" stroke-linecap="round"/><path d="M38,36 L42,44" stroke="#3D2C2C" stroke-width="2.5" stroke-linecap="round"/><path d="M42,36 L42,44" stroke="#3D2C2C" stroke-width="2.5" stroke-linecap="round"/><path d="M46,36 L42,44" stroke="#3D2C2C" stroke-width="2.5" stroke-linecap="round"/><line x1="58" y1="34" x2="56" y2="56" stroke="#3D2C2C" stroke-width="2.5" stroke-linecap="round"/><path d="M58,34 L61,42" stroke="#3D2C2C" stroke-width="2.5" stroke-linecap="round"/><path d="M36,48 Q50,44 64,48" fill="none" stroke="#3D2C2C" stroke-width="2" stroke-linecap="round"/><path d="M30,52 Q50,48 70,52" fill="none" stroke="#3D2C2C" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/></g></svg></div>';
+  h += '<div class="cal-inline">' + total + ' <span class="cal-unit">卡路里</span></div>';
+  h += '<div class="cal-target">目标 ' + tgt + ' 卡</div>'
+  h += '<div class="progress-wrap" ><div class="progress-fill' + (over ? ' over' : '') + '" style="width:' + Math.min(pct*100, 100) + '%"></div>';
+  h += '<div class="progress-text">' + Math.round(pct*100) + '%</div></div>';
+  var foodMsgText = (day && day.meals && day.meals.length === 0) ? '今天还没有记录哦' : (total === 0 ? '今天还没有记录哦' : (pct <= 0.5 ? '😿 吃的太少了，多吃点' : (total <= tgt ? '😋 继续保持，加油' : '⚠️ 超标啦！今天少吃点')));
+  h += '<div class="food-msg" id="foodMsg">' + foodMsgText + '</div>';
+
+  el.innerHTML = h;
+  // ===== Module 1: 2x2 meal summary grid =====
+  var summaryGrid = document.createElement('div');
+  summaryGrid.id = 'mealSummaryGrid';
+  summaryGrid.className = 'meal-summary-grid';
+  summaryGrid.style.marginTop = '14px';
+  var mealTypes = [['breakfast','早餐','🌅'],['lunch','午餐','☀️'],['dinner','晚餐','🌙'],['snack','加餐','🍪']];
+  mealTypes.forEach(function(mt) {
+    var meal = (day && day.meals) ? day.meals.find(function(m){ return m.type === mt[0]; }) : null;
+    var cal = meal ? (meal.totalCalories||0) : 0;
+    summaryGrid.innerHTML += '<div class="summary-box"><div class="sb-ico">' + mt[2] + '</div><div class="sb-name">' + mt[1] + '</div><div class="sb-cal">' + cal + '卡</div></div>';
+  });
+  el.appendChild(summaryGrid);
+
+  // ===== Module 2: Sticky note meal cards (full-width, single column) =====
+  var mealList = document.createElement('div');
+  mealList.id = 'mealList';
+  mealList.className = 'meal-list';
+  mealList.style.marginTop = '14px';
+  if (day && day.meals) {
+    // Sort by time (chronological order)
+    var sortedMeals = day.meals.slice().sort(function(a,b){ return (a.time||'').localeCompare(b.time||''); });
+    sortedMeals.forEach(function(m) {
+      if (m.foods && m.foods.length) {
+        mealList.innerHTML += stickyHTML(m);
+      }
+    });
+  }
+  el.appendChild(mealList);
+  // Update rice bowl fill via mask
+  var bowlPct = total / tgt;
+  var fillH = Math.min(80 * bowlPct, 80);
+  var fillY = 90 - fillH;
+  if (fillH > 0) { fillH += 2; fillY -= 2; }
+  var rf = document.getElementById('riceFill');
+  if (rf) { rf.setAttribute('y', fillY); rf.setAttribute('height', fillH); }
+  var rs = document.getElementById('riceSurface');
+  if (rs) rs.setAttribute('cy', fillY);
+}
+
+function stickyHTML(m) {
+  var h = '<div class="meal-sticky" data-meal-id="' + m.id + '" data-meal-type="' + m.type + '">';
+  h += '<button class="meal-del" onclick="delMeal(\'' + m.id + '\')">×</button>';
+  h += '<div class="mh"><div class="mt">' + (MEAL_ICO[m.type]||'') + ' ' + (MEAL_NAME[m.type]||m.type) + '</div>';
+  h += '<div class="mt2">' + (m.time||'') + '</div></div>';
+  if (m.photo) {
+    h += '<div class="photo-strip">';
+    var pics = Array.isArray(m.photo) ? m.photo : [m.photo];
+    pics.forEach(function(p) {
+      if (p && p.indexOf("data:") === 0) {
+        h += '<img src="' + p + '" style="width:80px;height:80px;object-fit:cover;border-radius:10px">';
+      } else if (p) {
+        h += '<img src="/photos/' + p + '" onclick="viewPhoto(\'/photos/' + p + '\')" style="width:80px;height:80px;object-fit:cover;border-radius:10px">';
+      }
+    });
+    h += '</div>';
+  }
+  h += '<div class="food-list">';
+  if (m.foods) m.foods.forEach(function(food, fi) {
+    h += '<div class="food-row" id="fr_' + m.id + '_' + fi + '">';
+    h += '<span class="food-text" ondblclick="editFood(\'' + m.id + '\',' + fi + ')">' + food.name + ' ' + food.grams + 'g</span>';
+    h += '<span class="food-cal">' + food.calories + ' 卡</span>';
+    h += '<span class="food-acts">';
+    h += '<button class="food-btn" onclick="editFood(\'' + m.id + '\',' + fi + ')" title="编辑">✏️</button>';
+    h += '<button class="food-btn food-btn-del" onclick="delFood(\'' + m.id + '\',' + fi + ')" title="删除">×</button>';
+    h += '</span></div>';
+  });
+  h += '</div>';
+  h += '<div class="meal-sub">共 ' + (m.totalCalories||0) + ' 卡 🔥</div>';
+  h += '<div class="meal-actions"><button class="btn-add-food" onclick="addFoodToMeal(\'' + m.id + '\')">+ 加一种食物</button></div>';
+  h += '</div>';
+  return h;
+}
+
+/* ===== Calendar Drawer ===== */
+function toggleCalDrawer() {
+  var drawer = document.getElementById('calDrawer');
+  if (drawer.classList.contains('on')) {
+    closeCalDrawer();
+  } else {
+    // Set calendar mode based on current view
+    var activeView = document.querySelector('.view.on');
+    calMode = (activeView && activeView.id === 'viewWater') ? 'water' : 'food';
+    
+    var parts = (calMode === 'water' ? waterDate : today).split('-');
+    calY = +parts[0]; calM = +parts[1];
+    document.getElementById('calTitle').textContent = calMode === 'water' ? '💧 选择日期' : '选择日期';
+    renderCal();
+    drawer.classList.add('on');
+    
+  }
+}
+function closeCalDrawer() {
+  document.getElementById('calDrawer').classList.remove('on');
+  document.getElementById('app').style.display = '';
+}
+
+/* ===== Calendar ===== */
+var calY, calM;
+function renderCal() {
+  if (!calY) { var t = today.split('-'); calY = +t[0]; calM = +t[1]; }
+  document.getElementById('monLabel').textContent = calY + '年 ' + calM + '月';
+  var first = new Date(calY, calM - 1, 1).getDay();
+  var days = new Date(calY, calM, 0).getDate();
+  var h = '';
+  var nowStr = fmtDate(new Date());
+  for (var i = 0; i < first; i++) h += '<div class="cal-cell empty"></div>';
+  for (var d = 1; d <= days; d++) {
+    var ds = calY + '-' + pad(calM) + '-' + pad(d);
+    var day = D.records[ds];
+    var cls = 'cal-cell';
+    if (calMode === 'water') {
+      var wt = getWaterTotal(ds);
+      if (wt > 0) {
+        cls += ' has-rec';
+        if (wt >= waterTarget) cls += ' over-rec';
+        else if (wt >= waterTarget * 0.8) cls += ' near-rec';
+      }
+    } else {
+      var tgt2 = getTargetForDate(ds);
+      if (day && day.meals && day.meals.length) {
+        cls += ' has-rec';
+        var calSum2 = 0;
+        day.meals.forEach(function(food, fi) { calSum2 += (food.totalCalories || 0); });
+        if (calSum2 > tgt2) cls += ' over-rec';
+        else if (calSum2 > tgt2 * 0.8) cls += ' near-rec';
+      }
+    }
+    if (ds === today) cls += ' today';
+    if (ds > nowStr) cls += ' future';
+    var click = (ds > nowStr) ? '' : ' onclick="openDay(\'' + ds + '\')"';
+    
+    // Calculate progress for rings
+    var calPct = 0, waterPct = 0;
+    if (day) {
+      var tgt2 = getTargetForDate(ds);
+      var calFromMeals = 0;
+      if (day.meals) day.meals.forEach(function(food, fi) { calFromMeals += (food.totalCalories || 0); });
+      if (calFromMeals && tgt2) calPct = calFromMeals / tgt2 * 100;
+      var wt2 = getWaterTotal(ds);
+      if (wt2 && waterTarget) waterPct = wt2 / waterTarget * 100;
+    }
+    var hasData = calPct > 0 || waterPct > 0;
+    if (hasData && !(cls.indexOf("future") >= 0)) cls += " has-rec";
+    else if (!(cls.indexOf("future") >= 0)) cls += " has-rec"; // faint ring needs has-rec too
+    
+    h += '<div class="' + cls + '"' + click + '>';
+    if (hasData) {
+      h += '<div class="cal-ring-wrap">' + ringSVG(calPct, waterPct) + '</div>';
+    } else if (!(cls.indexOf("future") >= 0)) {
+      h += '<div class="cal-ring-wrap faint-ring">' + ringSVG(0, 0) + '</div>';
+    }
+    h += '<span class="dn">' + d + '</span>';
+    h += '</div>';
+  }
+  document.getElementById('calGrid').innerHTML = h;
+}
+
+function chgMonth(d) {
+  calM += d;
+  if (calM > 12) { calM = 1; calY++; }
+  if (calM < 1) { calM = 12; calY--; }
+  renderCal();
+}
+
+var calMode = 'food'; // 'food' or 'water'
+
+function openDay(ds) {
+  var nowStr = fmtDate(new Date());
+  if (ds > nowStr) return;
+  closeCalDrawer();
+  if (calMode === 'water') {
+    waterDate = ds;
+    renderWater();
+    showView('viewWater');
+  } else {
+    today = ds;
+    backFromCalendar = true;
+    renderToday();
+    showView('viewToday');
+  }
+}
+
+/* ===== Add Meal ===== */
+function openAdd() {
+  curPhoto = '';
+  curType = 'breakfast';
+  uploadedPhotos = [];
+  document.getElementById('addModal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+
+  // Reset form
+  document.getElementById('calDisplay').textContent = '0 卡';
+  document.getElementById('aiResult').style.display = 'none';
+  document.getElementById('photoPreview').innerHTML = '';
+  foodRowCount = 0;
+  var container = document.getElementById('foodRows');
+  if (container) {
+    container.innerHTML = '<div class="food-add-row" id="foodRow_0"><div style="display:flex;gap:6px;align-items:center"><input type="text" class="fr-name" placeholder="食物名称" style="flex:1" oninput="updateModalCal()"><input type="number" class="fr-grams" placeholder="克" value="100" style="width:55px" oninput="updateModalCal()"><span style="font-size:14px;color:#666;align-self:center;margin-left:2px;font-weight:500">g</span><span class="fr-cal" style="color:#E8734A;font-weight:700;font-size:14px;min-width:50px;text-align:right">0卡</span><button class="fr-del" onclick="removeFoodRow(0)" style="display:none;background:none;border:none;color:#999;font-size:18px;cursor:pointer;padding:0 4px">×</button></div></div>';
+  }
+  document.querySelectorAll('.type-chip').forEach(function(c, i) {
+    c.classList.toggle('on', i === 0);
+  });
+  curType = 'breakfast';
+}
+
+
+
+var foodRowCount = 0;
+
+function addFoodRow() {
+  foodRowCount++;
+  var container = document.getElementById('foodRows');
+  var idx = foodRowCount;
+  var div = document.createElement('div');
+  div.className = 'food-add-row';
+  div.id = 'foodRow_' + idx;
+  div.style.cssText = 'display:flex;gap:6px;align-items:center';
+  div.innerHTML = '<input type="text" class="fr-name" placeholder="食物名称" style="flex:1" oninput="updateModalCal()">' +
+    '<input type="number" class="fr-grams" placeholder="克" value="100" style="width:55px" oninput="updateModalCal()">' +
+    '<span style="font-size:14px;color:#666;align-self:center;margin-left:2px;font-weight:500">g</span>' +
+    '<span class="fr-cal" style="color:#E8734A;font-weight:700;font-size:14px;min-width:50px;text-align:right">0卡</span>' +
+    '<button class="fr-del" onclick="removeFoodRow(' + idx + ')" style="display:inline;background:none;border:none;color:#999;font-size:18px;cursor:pointer;padding:0 4px">×</button>';
+  container.appendChild(div);
+  div.querySelector('.fr-name').focus();
+  updateDelButtons();
+}
+
+function removeFoodRow(idx) {
+  var container = document.getElementById('foodRows');
+  if (container.children.length <= 1) return; // minimum 1 row
+  var row = document.getElementById('foodRow_' + idx);
+  if (row) row.remove();
+  updateDelButtons();
+  updateModalCal();
+}
+
+function updateDelButtons() {
+  var container = document.getElementById('foodRows');
+  var rows = container.querySelectorAll('.food-add-row');
+  rows.forEach(function(row, i) {
+    var delBtn = row.querySelector('.fr-del');
+    if (delBtn) delBtn.style.display = rows.length > 1 ? 'inline' : 'none';
+  });
+}
+
+function updateModalCal() {
+  var rows = document.querySelectorAll('#foodRows .food-add-row');
+  var totalCal = 0;
+  rows.forEach(function(row) {
+    var nameEl = row.querySelector('.fr-name');
+    var gramsEl = row.querySelector('.fr-grams');
+    var calEl = row.querySelector('.fr-cal');
+    if (!nameEl || !gramsEl || !calEl) return;
+    var name = nameEl.value.trim();
+    var grams = parseInt(gramsEl.value) || 0;
+    var cal = 0;
+    if (name && grams > 0) {
+      var found = null;
+      for (var k in CAL_DB) {
+        if (name.indexOf(k) >= 0 || k.indexOf(name) >= 0) { found = CAL_DB[k]; break; }
+      }
+      if (found) {
+        var keys = Object.keys(found).map(Number).sort(function(a,b){return a-b});
+        var best = keys[0], bestD = Infinity;
+        keys.forEach(function(g) { if (Math.abs(g - grams) < bestD) { bestD = Math.abs(g - grams); best = g; } });
+        cal = found[best];
+        if (best !== grams && grams > 0) cal = Math.round(cal * grams / best);
+      } else {
+        cal = Math.round(grams * 1.5);
+      }
+    }
+    calEl.textContent = cal + '卡';
+    totalCal += cal;
+  });
+  var calDisplay = document.getElementById('calDisplay');
+  if (calDisplay) calDisplay.textContent = totalCal + ' 卡';
+  asyncLookupUnknown();
+}
+
+function asyncLookupUnknown() {
+  var rows = document.querySelectorAll('#foodRows .food-add-row');
+  var lookupNames = [];
+  rows.forEach(function(row) {
+    var nameEl = row.querySelector('.fr-name');
+    var gramsEl = row.querySelector('.fr-grams');
+    var calEl = row.querySelector('.fr-cal');
+    if (!nameEl || !gramsEl || !calEl) return;
+    var name = nameEl.value.trim();
+    var grams = parseInt(gramsEl.value) || 0;
+    if (!name || grams <= 0) return;
+    var inDb = false;
+    for (var k in CAL_DB) {
+      if (name.indexOf(k) >= 0 || k.indexOf(name) >= 0) { inDb = true; break; }
+    }
+    if (inDb || onlineCalCache[name]) return;
+    lookupNames.push({name: name, grams: grams, calEl: calEl});
+  });
+  if (!lookupNames.length) return;
+  lookupNames.forEach(function(item) {
+    lookupCalorieOnline(item.name, item.grams).then(function(calPer100) {
+      if (calPer100 && item.calEl && item.calEl.parentElement) {
+        var cal = Math.round(calPer100 * item.grams / 100);
+        item.calEl.textContent = cal + '卡';
+        var total = 0;
+        document.querySelectorAll('#foodRows .food-add-row').forEach(function(r) {
+          var ce = r.querySelector('.fr-cal');
+          if (ce) total += (parseInt(ce.textContent) || 0);
+        });
+        var cd = document.getElementById('calDisplay');
+        if (cd) cd.textContent = total + ' 卡';
+      }
+    });
+  });
+}
+
+function compressPhoto(file, maxDim, quality) {
+  maxDim = maxDim || 200;
+  quality = quality || 0.5;
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var scale = Math.min(maxDim / img.width, maxDim / img.height, 1);
+      var w = Math.round(img.width * scale);
+      var h = Math.round(img.height * scale);
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+function onPhotoSelect(input) {
+  var files = Array.from(input.files || []);
+  if (!files.length) return;
+  
+  // Limit to 3 photos total
+  var remaining = 3 - uploadedPhotos.length;
+  if (remaining <= 0) { toast('最多上传3张照片', 'err'); return; }
+  files = files.slice(0, remaining);
+  
+  var preview = document.getElementById('photoPreview');
+  
+  files.forEach(function(file, idx) {
+    compressPhoto(file, 200, 0.5).then(function(dataUrl) {
+      uploadedPhotos.push(dataUrl);
+      var div = document.createElement('div');
+      div.style.cssText = 'width:80px;height:80px;border-radius:10px;overflow:hidden;position:relative';
+      div.innerHTML = '<img src="' + dataUrl + '" style="width:100%;height:100%;object-fit:cover"><button onclick="removePhoto(this)" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>';
+      preview.appendChild(div);
+      
+      // Trigger AI recognition on first photo after it's loaded
+      if (idx === 0) {
+        recognizeFood(file);
+      }
+    });
+  });
+  
+  input.value = '';
+}
+
+function removePhoto(btn) {
+  var div = btn.parentElement;
+  var parent = div.parentElement;
+  var idx = Array.from(parent.children).indexOf(div);
+  uploadedPhotos.splice(idx, 1);
+  div.remove();
+}
+
+async function recognizeFood(file) {
+  var aiResult = document.getElementById("aiResult");
+  var aiResultText = document.getElementById("aiResultText");
+  var aiLoading = document.getElementById("aiLoading");
+  var apiKey = STEPFUN_API_KEY;
+  
+  aiResult.style.display = 'block';
+  aiResultText.textContent = '';
+  aiLoading.style.display = 'inline';
+  
+  if (!apiKey) {
+    aiLoading.style.display = 'none';
+    aiResultText.textContent = '请先在设置中配置 AI API Key';
+    return;
+  }
+  
+  try {
+    // Compress image to reduce upload size
+    var base64 = await new Promise(function(resolve) {
+      var img = new Image();
+      img.onload = function() {
+        var maxDim = 200;
+        var scale = Math.min(maxDim / img.width, maxDim / img.height, 1);
+        var w = Math.round(img.width * scale);
+        var h = Math.round(img.height * scale);
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.5).split(',')[1]);
+      };
+      img.src = URL.createObjectURL(file);
+    });
+    
+    aiLoading.textContent = '🔍 AI 识别中...';
+    
+    var res = await fetch('https://api.stepfun.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + STEPFUN_API_KEY
+      },
+      body: JSON.stringify({
+        model: 'step-1o-turbo-vision',
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'text', text: '识别这张照片中的食物，以JSON数组格式返回，每个元素包含name(食物名称)、grams(估算克数)和calPer100g(每100克卡路里)。只返回JSON，不要其他文字。示例：[{"name":"米饭","grams":150,"calPer100g":116},{"name":"青菜","grams":100,"calPer100g":25}]' },
+            { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + base64 } }
+          ]
+        }]
+      })
+    });
+    
+    var data = await res.json();
+    aiLoading.style.display = 'none';
+    
+    if (data.choices && data.choices[0]) {
+      var text = data.choices[0].message.content;
+      var jsonMatch = text.match(/\[.*\]/s);
+      if (jsonMatch) {
+        var foods = JSON.parse(jsonMatch[0]);
+        if (foods.length) {
+          aiResultText.textContent = '识别出 ' + foods.length + ' 种食物';
+          var container = document.getElementById('foodRows');
+          container.innerHTML = '';
+          foodRowCount = 0;
+          foods.forEach(function(food) {
+            addFoodRow();
+            var row = document.getElementById('foodRow_' + foodRowCount);
+            if (row) {
+              var nameEl = row.querySelector('.fr-name');
+              var gramsEl = row.querySelector('.fr-grams');
+              var calEl = row.querySelector('.fr-cal');
+              if (nameEl) nameEl.value = food.name || '';
+              if (gramsEl) gramsEl.value = food.grams || 100;
+              if (calEl && food.calPer100g && food.grams) {
+                calEl.textContent = Math.round(food.calPer100g * food.grams / 100) + '卡';
+              }
+            }
+          });
+          // Update total from AI-provided calories
+          var totalFromAI = 0;
+          document.querySelectorAll('#foodRows .food-add-row').forEach(function(r) {
+            var ce = r.querySelector('.fr-cal');
+            if (ce) totalFromAI += (parseInt(ce.textContent) || 0);
+          });
+          var calDisplay = document.getElementById('calDisplay');
+          if (calDisplay) calDisplay.textContent = totalFromAI + ' 卡';
+        } else {
+          aiResultText.textContent = '未识别出食物，请手动输入';
+        }
+      } else {
+        aiResultText.textContent = '未识别出食物，请手动输入';
+      }
+    } else {
+      aiResultText.textContent = '识别失败：' + (data.error ? data.error.message : '未知错误');
+    }
+  } catch(e) {
+    aiLoading.style.display = 'none';
+    aiResultText.textContent = '识别失败：' + (e.message || '网络错误');
+  }
+}
+
+function updateCalDisplay(name, grams) {
+  var cal = 0;
+  var found = null;
+  for (var k in CAL_DB) {
+    if (name.indexOf(k) >= 0 || k.indexOf(name) >= 0) { found = CAL_DB[k]; break; }
+  }
+  if (found) {
+    var keys = Object.keys(found).map(Number).sort(function(a,b){return a-b});
+    var best = keys[0], bestD = Infinity;
+    keys.forEach(function(g) { if (Math.abs(g - grams) < bestD) { bestD = Math.abs(g - grams); best = g; } });
+    cal = found[best];
+    if (best !== grams && grams > 0) cal = Math.round(cal * grams / best);
+  } else {
+    cal = Math.round(grams * 1.5);
+  }
+  var calEl = document.getElementById('calDisplay');
+  if (calEl) calEl.textContent = cal + ' 卡';
+}
+
+function closeAdd() {
+  document.getElementById('addModal').classList.remove('on');
+  document.getElementById('app').style.display = '';
+  document.body.style.overflow = '';
+  curPhoto = '';
+}
+
+function onPhoto(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  toast('📷 照片已选好，请手动输入食物信息');
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var box = document.getElementById('photoBox');
+    box.innerHTML = '<img src="' + ev.target.result + '"><input type="file" accept="image/*" onchange="onPhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0;z-index:10">';
+  };
+  reader.readAsDataURL(file);
+}
+
+function addRow() {
+  var box = document.getElementById('foodList');
+  var idx = rowCount++;
+  var div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap';
+  div.innerHTML = '<input class="f-input" id="fn_' + idx + '" placeholder="吃了什么？" oninput="calcRow(' + idx + ')">' +
+    '<input class="f-input f-grams" id="fg_' + idx + '" type="number" value="100" oninput="calcRow(' + idx + ')">' +
+    '<input class="f-input f-cal" id="fc_' + idx + '" type="number" readonly>';
+  box.appendChild(div);
+}
+
+function calcRow(idx) {
+  var total = 0;
+  for (var i = 0; i < rowCount; i++) {
+    var nameEl = document.getElementById('fn_' + i);
+    var gramsEl = document.getElementById('fg_' + i);
+    var calEl = document.getElementById('fc_' + i);
+    if (!nameEl) continue;
+    var name = nameEl.value.trim();
+    var grams = parseInt(gramsEl.value) || 0;
+    var cal = 0;
+    if (name && grams > 0) {
+      // Check AI cache first
+      var cacheKey = name + '_' + grams;
+      if (aiCalCache[cacheKey]) {
+        cal = aiCalCache[cacheKey];
+      } else {
+        // Check local DB
+        var found = null;
+        for (var k in CAL_DB) {
+          if (name === k || name.indexOf(k) >= 0 || k.indexOf(name) >= 0) { found = CAL_DB[k]; break; }
+        }
+        if (found) {
+          var keys = Object.keys(found).map(Number).sort(function(a,b){return a-b});
+          var best = keys[0], bestD = Infinity;
+          keys.forEach(function(g) { if (Math.abs(g - grams) < bestD) { bestD = Math.abs(g - grams); best = g; } });
+          cal = found[best];
+          if (best !== grams && grams > 0) cal = Math.round(cal * grams / best);
+        } else {
+          // Not in local DB - use default and trigger AI lookup in background
+          cal = Math.round(grams * 1.5);
+          aiLookupCal(name, grams, calEl, i);
+        }
+      }
+    }
+    if (calEl) calEl.value = cal;
+    total += cal;
+  }
+  document.getElementById('totalCal').textContent = total + ' 卡';
+}
+
+// Async AI calorie lookup for foods not in local database
+async function aiLookupCal(name, grams, calEl, rowIdx) {
+  var cacheKey = name + '_' + grams;
+  if (aiCalCache[cacheKey]) {
+    if (calEl) calEl.value = aiCalCache[cacheKey];
+    return;
+  }
+  var cal = calcRowCal(name, grams);
+    aiCalCache[cacheKey] = cal;
+    var nameEl = document.getElementById('fn_' + rowIdx);
+    if (nameEl && nameEl.value.trim() === name && calEl) {
+      calEl.value = cal;
+      var total = 0;
+      for (var j = 0; j < rowCount; j++) {
+        var ce = document.getElementById('fc_' + j);
+        if (ce) total += (parseInt(ce.value) || 0);
+      }
+      var totalEl = document.getElementById('totalCal');
+      if (totalEl) totalEl.textContent = total + ' 卡';
+    }
+}
+
+async function saveMeal() {
+  var rows = document.querySelectorAll('#foodRows .food-add-row');
+  var foods = [];
+  var totalCal = 0;
+  rows.forEach(function(row) {
+    var nameEl = row.querySelector('.fr-name');
+    var gramsEl = row.querySelector('.fr-grams');
+    var calEl = row.querySelector('.fr-cal');
+    if (!nameEl || !gramsEl) return;
+    var name = nameEl.value.trim();
+    var grams = parseInt(gramsEl.value) || 0;
+    var calText = calEl ? calEl.textContent : '0卡';
+    var cal = parseInt(calText) || 0;
+    if (name && grams > 0) { foods.push({name: name, grams: grams, calories: cal}); totalCal += cal; }
+  });
+  
+  if (!foods.length) { toast('至少填一种食物哦', 'err'); return; }
+
+  var now = new Date();
+  var meal = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    type: curType,
+    time: pad(now.getHours()) + ':' + pad(now.getMinutes()),
+    photo: uploadedPhotos.length > 0 ? uploadedPhotos[0] : '',
+    foods: foods,
+    totalCalories: totalCal
+  };
+
+  if (!D.records[today]) D.records[today] = {meals: [], water: 0};
+  D.records[today].meals.push(meal);
+  saveData();
+  toast('🍚 又干一顿！', 'ok');
+  closeAdd();
+  renderToday();
+}
+
+async function delMeal(id) {
+  if (!confirm('删掉这条记录？')) return;
+  if (D.records[today]) D.records[today].meals = D.records[today].meals.filter(function(m){return m.id !== id;});
+  saveData();
+  toast('已删除');
+  renderToday();
+}
+
+// Edit a single food item in a saved meal
+function editFood(mealId, foodIdx) {
+  var row = document.getElementById('fr_' + mealId + '_' + foodIdx);
+  if (!row || row.classList.contains('editing')) return;
+  // Save any other editing row first
+  document.querySelectorAll('.food-row.editing').forEach(function(r) { saveFoodEdit(r); });
+  
+  row.classList.add('editing');
+  var day = D.records[today];
+  var meal = day && day.meals ? day.meals.find(m => m.id === mealId) : null;
+  if (!meal || !meal.foods || !meal.foods[foodIdx]) return;
+  var f = meal.foods[foodIdx];
+  
+  // Inline edit: replace food-text content with inputs
+  var textEl = row.querySelector('.food-text');
+  if (textEl) {
+    textEl.innerHTML = '<input class="f-edit-inline" id="efn_' + mealId + '_' + foodIdx + '" value="' + (f.name||'').replace(/'/g, "\'") + '" style="width:120px;padding:3px 6px;border:1.5px solid #E8734A;border-radius:6px;font-size:13px;outline:none;font-family:inherit">' +
+      '<input class="f-edit-inline" id="efg_' + mealId + '_' + foodIdx + '" type="number" value="' + (f.grams||100) + '" style="width:55px;padding:3px;border:1.5px solid #E8734A;border-radius:6px;font-size:13px;text-align:center;outline:none;font-family:inherit">' +
+      '<button class="f-edit-ok" onclick="saveFoodEdit(document.getElementById(\'fr_' + mealId + '_' + foodIdx + '\'))" style="background:#E8734A;color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer">✓</button>' +
+      '<button class="f-edit-no" onclick="cancelFoodEdit(\'fr_' + mealId + '_' + foodIdx + '\')" style="background:none;border:1px solid #ddd;border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer;color:#999">✕</button>';
+  }
+  var nameEl = document.getElementById('efn_' + mealId + '_' + foodIdx);
+  if (nameEl) { nameEl.focus(); nameEl.select(); }
+}
+
+async function saveFoodEdit(row) {
+  if (!row) return;
+  row.classList.remove('editing');
+  
+  var nameEl = row.querySelector('[id^=efn_]');
+  var gramsEl = row.querySelector('[id^=efg_]');
+  if (!nameEl || !gramsEl) return;
+  
+  var name = nameEl.value.trim();
+  var grams = parseInt(gramsEl.value) || 100;
+  if (!name) { cancelFoodEdit(row.id); return; }
+  
+  // Parse mealId and foodIdx from row id
+  var parts = row.id.split('_');
+  var mealId = parts[1];
+  var foodIdx = parseInt(parts[2]);
+  
+  // Get day and meal data
+  var day = D.records[today];
+  if (!day || !day.meals) return;
+  var meal = day.meals.find(m => m.id === mealId);
+  if (!meal || !meal.foods || !meal.foods[foodIdx]) return;
+  
+  // Update food item
+  meal.foods[foodIdx].name = name;
+  meal.foods[foodIdx].grams = grams;
+  
+  // Recalc calories
+  var cal = 0;
+  var found = null;
+  for (var k in CAL_DB) {
+    if (name === k || name.indexOf(k) >= 0 || k.indexOf(name) >= 0) { found = CAL_DB[k]; break; }
+  }
+  if (found) {
+    var keys = Object.keys(found).map(Number).sort(function(a,b){return a-b});
+    var best = keys[0], bestD = Infinity;
+    keys.forEach(function(g) { if (Math.abs(g - grams) < bestD) { bestD = Math.abs(g - grams); best = g; } });
+    cal = found[best];
+    if (best !== grams && grams > 0) cal = Math.round(cal * grams / best);
+  } else {
+    cal = Math.round(grams * 1.5);
+  }
+  meal.foods[foodIdx].calories = cal;
+  
+  saveData();
+  
+  meal.totalCalories = meal.foods.reduce(function(s, f) { return s + (f.calories || 0); }, 0);
+  saveData();
+  
+  toast('✅ 已更新', 'ok');
+  await loadData();
+}
+
+function cancelFoodEdit(rowId) {
+  var row = document.getElementById(rowId);
+  if (!row) return;
+  row.classList.remove('editing');
+  // Reload to restore original text
+  loadData();
+}
+
+// Delete a single food item from a meal
+async function delFood(mealId, foodIdx) {
+  if (!confirm('删掉这一项？')) return;
+  var day = D.records[today];
+  if (!day || !day.meals) return;
+  var meal = day.meals.find(m => m.id === mealId);
+  if (!meal || !meal.foods) return;
+  
+  meal.foods.splice(foodIdx, 1);
+  meal.totalCalories = meal.foods.reduce(function(s, f) { return s + (f.calories || 0); }, 0);
+  
+  saveData();
+  
+  toast('已删除');
+  await loadData();
+}
+
+// Add a food item to an existing meal
+async function addFoodToMeal(mealId) {
+  var day = D.records[today];
+  if (!day || !day.meals) return;
+  var meal = day.meals.find(m => m.id === mealId);
+  if (!meal) return;
+  
+  var mealEl = document.querySelector('[data-meal-id="' + mealId + '"]');
+  if (!mealEl) return;
+  
+  // Check if add form already exists
+  if (mealEl.querySelector('.inline-add-form')) return;
+  
+  var formHtml = '<div class="inline-add-form" style="margin-top:8px;padding:10px;background:#FFF5F0;border-radius:10px;border:1.5px dashed #E8734A">';
+  formHtml += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  formHtml += '<input class="f-edit-input" id="iaf_name" placeholder="食物名" style="flex:1;min-width:70px">';
+  formHtml += '<input class="f-edit-g" id="iaf_grams" type="number" value="100">';
+  formHtml += '<button class="f-edit-ok" onclick="submitAddFood(\'' + mealId + '\')">✓</button>';
+  formHtml += '<button class="f-edit-no" onclick="this.closest(\'.inline-add-form\').remove()">✕</button>';
+  formHtml += '</div></div>';
+  
+  mealEl.insertAdjacentHTML('beforeend', formHtml);
+  document.getElementById('iaf_name').focus();
+}
+
+async function submitAddFood(mealId) {
+  var nameEl = document.getElementById('iaf_name');
+  var gramsEl = document.getElementById('iaf_grams');
+  if (!nameEl || !gramsEl) return;
+  
+  var name = nameEl.value.trim();
+  var grams = parseInt(gramsEl.value) || 100;
+  if (!name) { toast('填个食物名吧', 'err'); return; }
+  
+  var day = D.records[today];
+  if (!day || !day.meals) return;
+  var meal = day.meals.find(m => m.id === mealId);
+  if (!meal) return;
+  
+  // Calc calories
+  var cal = 0;
+  var found = null;
+  for (var k in CAL_DB) {
+    if (name === k || name.indexOf(k) >= 0 || k.indexOf(name) >= 0) { found = CAL_DB[k]; break; }
+  }
+  if (found) {
+    var keys = Object.keys(found).map(Number).sort(function(a,b){return a-b});
+    var best = keys[0], bestD = Infinity;
+    keys.forEach(function(g) { if (Math.abs(g - grams) < bestD) { bestD = Math.abs(g - grams); best = g; } });
+    cal = found[best];
+    if (best !== grams && grams > 0) cal = Math.round(cal * grams / best);
+  } else {
+    cal = Math.round(grams * 1.5);
+  }
+  
+  meal.foods.push({ name: name, grams: grams, calories: cal });
+  meal.totalCalories = meal.foods.reduce(function(s, f) { return s + (f.calories || 0); }, 0);
+  
+  saveData();
+  
+  toast('🍳 加个菜！', 'ok');
+  await loadData();
+}
+
+function viewPhoto(src) {
+  document.getElementById('fullPhoto').src = src;
+  document.getElementById('photoModal').classList.add('on');
+}
+
+/* ===== Type selector ===== */
+document.querySelectorAll('.type-chip').forEach(function(btn) {
+  btn.onclick = function() {
+    document.querySelectorAll('.type-chip').forEach(function(b) { b.classList.remove('on'); });
+    btn.classList.add('on');
+    curType = btn.dataset.t;
+  };
+});
+
+/* ===== Goal selector ===== */
+document.querySelectorAll('.goal-item').forEach(function(btn) {
+  btn.onclick = function() {
+    document.querySelectorAll('.goal-item').forEach(function(b) { b.classList.remove('on'); });
+    btn.classList.add('on');
+    if (btn.dataset.t === 'custom') { document.getElementById('inpTarget').value = ''; document.getElementById('inpWaterTarget').value = ''; }
+    else { document.getElementById('inpTarget').value = btn.dataset.c; document.getElementById('inpWaterTarget').value = btn.dataset.w; }
+  };
+});
+
+
+
+async function saveSettings() {
+  var active = document.querySelector('.goal-item.on');
+  var gt = active ? active.dataset.t : 'custom';
+  var ct = parseInt(document.getElementById('inpTarget').value) || 1800;
+  var wt = parseInt(document.getElementById('inpWaterTarget').value) || 2000;
+  // Save personal info
+  var genderEl = document.querySelector('.gender-opt.on');
+  var height = parseInt(document.getElementById('inpHeight').value) || 0;
+  var curWeight = parseInt(document.getElementById('inpWeight').value) || 0;
+  var targetWeight = parseInt(document.getElementById('inpTargetWeight').value) || 0;
+  D.settings.gender = genderEl ? genderEl.dataset.g : 'male';
+  if (height) D.settings.height = height;
+  if (curWeight) D.settings.currentWeight = curWeight;
+  if (targetWeight) D.settings.targetWeight = targetWeight;
+  if (!D.settings.targetHistory) D.settings.targetHistory = {};
+  // Preserve the original target as default for past dates
+  if (!D.settings._defaultTarget) {
+    D.settings._defaultTarget = D.settings.dailyCalorieTarget || 1800;
+  }
+  // Record new target for today
+  D.settings.targetHistory[getRealToday()] = ct;
+  localStorage.setItem('dietSettings', JSON.stringify(D.settings));
+  toast('💾 已保存', 'ok');
+  showView('viewToday');
+  backFromCalendar = false;
+}
+
+function goSettings() {
+  backFromCalendar = false;
+  showView('viewSettings');
+}
+
+/* ===== Navigation ===== */
+function showView(id) {
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('on'); });
+  document.getElementById(id).classList.add('on');
+
+  document.querySelectorAll('#footer button').forEach(function(btn, i) {
+    btn.classList.toggle('on',
+      (id === 'viewToday' && i === 0) ||
+      (id === 'viewWater' && i === 1) ||
+      (id === 'viewSettings' && i === 2)
+    );
+  });
+
+  var addBtn = document.getElementById('addBtn');
+  var footer = document.getElementById('footer');
+  footer.classList.remove('hidden');
+  if (id === 'viewWater' || id === 'viewSettings') { addBtn.classList.add('hidden'); }
+  else { addBtn.classList.remove('hidden'); }
+  if (id === 'viewSettings') { _pendingGoal = ''; updGoalUI(); var ctInp = document.getElementById('inpTarget'); var wtInp = document.getElementById('inpWaterTarget'); if (ctInp) ctInp.value = D.settings.dailyCalorieTarget || 1800; if (wtInp) wtInp.value = D.settings.dailyWaterTarget || 2000; }
+  if (id === 'viewToday') renderToday(); if (id === 'viewWater') renderWater();
+}
+
+/* ===== Toast ===== */
+function toast(msg, cls) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (cls || '');
+  requestAnimationFrame(function() { t.classList.add('show'); });
+  setTimeout(function() { t.classList.remove('show'); }, 2000);
+}
+
+/* ===== Utils ===== */
+function fmtDate(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function getRealToday() { return fmtDate(new Date()); }
+
+// Get the calorie target active on a given date
+function getTargetForDate(ds) {
+  var best = null;
+  for (var k in D.settings.targetHistory) {
+    if (k <= ds && (!best || k > best)) best = k;
+  }
+  if (best) return D.settings.targetHistory[best];
+  if (D.settings._defaultTarget) return D.settings._defaultTarget;
+  return D.settings.dailyCalorieTarget || 1800;
+}
+
+function navDate(delta) {
+  var parts = today.split('-');
+  var d = new Date(+parts[0], +parts[1]-1, +parts[2]);
+  d.setDate(d.getDate() + delta);
+  var ns = fmtDate(d);
+  var now = fmtDate(new Date());
+  // Don't allow navigating past today
+  if (ns > now) return;
+  today = ns;
+  renderToday();
+}
+
+/* ===== Init ===== */
+loadData();
+calY = +today.split('-')[0];
+calM = +today.split('-')[1];
+
+/* ===== Water Tracking ===== */
+var waterTarget = 2000;
+var waterDate = fmtDate(new Date()); // currently viewed date in water view
+
+function getWaterData(ds) {
+  var day = D.records && D.records[ds];
+  return day ? (day.waterRecords || []) : [];
+}
+
+
+function getWaterTotal(ds) {
+  return getWaterData(ds).reduce(function(s, r) { return s + (r.ml || 0); }, 0);
+}
+
+function fmtDateCN(ds) {
+  var parts = ds.split('-');
+  var d = new Date(+parts[0], +parts[1]-1, +parts[2]);
+  var wd = ['日','一','二','三','四','五','六'];
+  return parts[0] + '年' + (+parts[1]) + '月' + (+parts[2]) + '日 周' + wd[d.getDay()];
+}
+
+function renderWater() {
+  var ds = waterDate || today;
+  var total = getWaterTotal(ds);
+  var pct = total / waterTarget;
+  var over = total >= waterTarget;
+  document.getElementById('waterTotal').textContent = total;
+  document.getElementById('waterDate').textContent = fmtDateCN(ds);
+  document.getElementById('waterTargetDisplay').textContent = waterTarget;
+  var fill = document.getElementById('waterProgressFill');
+  fill.style.width = (pct * 100) + '%';
+  var wp = document.getElementById('waterProgressText');
+  if (wp) wp.textContent = Math.round(pct * 100) + '%';
+  fill.style.background = over
+    ? 'linear-gradient(90deg,#1565C0,#0D47A1)'
+    : 'linear-gradient(90deg,#4FC3F7,#1976D2)';
+  var fillH2 = Math.min(80 * pct, 80);
+  var fillY2 = 90 - fillH2;
+  if (fillH2 > 0) { fillH2 += 2; fillY2 -= 2; }
+  var wf = document.getElementById('waterFill');
+  if (wf) { wf.setAttribute('y', fillY2); wf.setAttribute('height', fillH2); }
+  var ws = document.getElementById('waterSurface');
+  if (ws) ws.setAttribute('cy', fillY2);
+  var msgEl = document.getElementById('waterMsg');
+  if (total === 0) msgEl.textContent = '今天还没有记录哦';
+  else if (pct <= 0.5) msgEl.textContent = '😿 喝的太少了，多喝点';
+  else if (total <= waterTarget) msgEl.textContent = '😋 继续保持，加油';
+  else msgEl.textContent = '💪 喝太多啦！注意适量哦';
+  var records = getWaterData(ds);
+  var listEl = document.getElementById('waterList');
+  if (!records.length) {
+    listEl.innerHTML = '<div class="water-empty">还没有饮水记录</div>';
+  } else {
+    listEl.innerHTML = records.map(function(r, i) {
+      return '<div class="water-entry"><div class="water-entry-left"><span class="water-entry-amount">' + r.ml + 'ml</span><span style="font-size:12px;color:#bbb">' + (r.time || '') + '</span></div><button class="water-entry-del" onclick="delWater(' + i + ')">×</button></div>';
+    }).join('');
+  }
+}
+
+function waterNavDate(delta) {
+  var ds = waterDate || today;
+  var parts = ds.split('-');
+  var d = new Date(+parts[0], +parts[1]-1, +parts[2]);
+  d.setDate(d.getDate() + delta);
+  var ns = fmtDate(d);
+  if (ns > today) return;
+  waterDate = ns;
+  renderWater();
+}
+
+function addWater(ml) {
+  var ds = waterDate || today;
+  if (ds !== today) { toast('只能记录今天的饮水哦', 'err'); return; }
+  if (!D.records[ds]) D.records[ds] = {meals: [], waterRecords: [], totalCalories: 0};
+  if (!D.records[ds].waterRecords) D.records[ds].waterRecords = [];
+  var now = new Date();
+  D.records[ds].waterRecords.push({ml: ml, time: pad(now.getHours()) + ':' + pad(now.getMinutes())});
+  saveData();
+  renderWater();
+  toast('🥤 补水成功！', 'ok');
+}
+
+function addWaterCustom() {
+  var inp = document.getElementById('waterCustom');
+  var ml = parseInt(inp.value);
+  if (!ml || ml <= 0) { toast('请输入有效毫升数', 'err'); return; }
+  if (ml > 5000) { toast('一次最多 5000ml 哦', 'err'); return; }
+  addWater(ml);
+  inp.value = '';
+}
+
+function delWater(idx) {
+  var ds = waterDate || today;
+  if (D.records[ds] && D.records[ds].waterRecords) {
+    D.records[ds].waterRecords.splice(idx, 1);
+    saveData();
+    renderWater();
+  }
+}
+
+
+
+f
+
+function ringSVG(calPct, waterPct) {
+  var uid = 'r' + (calPct + waterPct * 100);
+  var C1 = 2 * Math.PI * 16;
+  var C2 = 2 * Math.PI * 11;
+  var calOff = C1 * (1 - Math.min(calPct, 100) / 100);
+  var watOff = C2 * (1 - Math.min(waterPct, 100) / 100);
+  var s = '<svg viewbox="0 0 36 36" width="50" height="50">';
+  s += '<defs>';
+  s += '<linearGradient id="' + uid + 'c" x1="0" y1="0" x2="1" y2="0">';
+  s += '<stop offset="0%" stop-color="#E8734A"/>';
+  s += '<stop offset="100%" stop-color="#F4A261"/>';
+  s += '</linearGradient>';
+  s += '<linearGradient id="' + uid + 'w" x1="0" y1="0" x2="1" y2="0">';
+  s += '<stop offset="0%" stop-color="#1976D2"/>';
+  s += '<stop offset="100%" stop-color="#4FC3F7"/>';
+  s += '</linearGradient>';
+  s += '<pattern id="' + uid + 'p" patternUnits="userSpaceOnUse" width="12" height="6">';
+  s += '<rect width="12" height="6" fill="rgba(255,255,255,0.15)"/>';
+  s += '<rect width="10" height="1" x="1" y="1" fill="rgba(255,255,255,0.25)"/>';
+  s += '</pattern>';
+  s += '</defs>';
+  s += '<circle cx="18" cy="18" r="16" fill="none" stroke="#f5f1ec" stroke-width="5"/>';
+  s += '<circle cx="18" cy="18" r="16" fill="none" stroke="url(#' + uid + 'c)" stroke-width="5" stroke-dasharray="' + C1 + ' ' + C1 + '" stroke-dashoffset="' + calOff + '" transform="rotate(-90 18 18)"/>';
+  s += '<circle cx="18" cy="18" r="16" fill="none" stroke="url(#' + uid + 'p)" stroke-width="5" stroke-dasharray="' + C1 + ' ' + C1 + '" stroke-dashoffset="' + calOff + '" transform="rotate(-90 18 18)"/>';
+  s += '<circle cx="18" cy="18" r="11" fill="none" stroke="#f5f1ec" stroke-width="3.5"/>';
+  s += '<circle cx="18" cy="18" r="11" fill="none" stroke="url(#' + uid + 'w)" stroke-width="3.5" stroke-dasharray="' + C2 + ' ' + C2 + '" stroke-dashoffset="' + watOff + '" transform="rotate(-90 18 18)"/>';
+  s += '<circle cx="18" cy="18" r="11" fill="none" stroke="url(#' + uid + 'p)" stroke-width="3.5" stroke-dasharray="' + C2 + ' ' + C2 + '" stroke-dashoffset="' + watOff + '" transform="rotate(-90 18 18)"/>';
+  s += '</svg>';
+  return s;
+}
+  loadData();
+  </script>
+</body>
+</html>
