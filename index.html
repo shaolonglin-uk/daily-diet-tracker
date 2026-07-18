@@ -1326,6 +1326,12 @@ async function recognizeFood(file) {
         var foods = JSON.parse(jsonMatch[0]);
         if (foods.length) {
           aiResultText.textContent = '识别出 ' + foods.length + ' 种食物（叠加到现有食物）';
+          // Remove empty rows before adding AI foods
+          var allRows = document.querySelectorAll('#foodRows .food-add-row');
+          allRows.forEach(function(r) {
+            var nameEl = r.querySelector('.fr-name');
+            if (nameEl && !nameEl.value.trim()) r.remove();
+          });
           foods.forEach(function(food) {
             addFoodRow();
             var row = document.getElementById('foodRow_' + foodRowCount);
