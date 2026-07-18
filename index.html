@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="version" content="v3.71">
   <title>吃什嘛了</title>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
   <style>
@@ -1765,6 +1766,14 @@ function toast(msg, cls) {
 /* ===== Utils ===== */
 function fmtDate(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
+// Check for updates
+var APP_VER = 'v3.71';
+var savedVer = localStorage.getItem('dietAppVer');
+if (savedVer && savedVer !== APP_VER) {
+  toast('🔄 有新版本，请长按刷新按钮重新加载', 'ok');
+}
+localStorage.setItem('dietAppVer', APP_VER);
+
 function getRealToday() { return fmtDate(new Date()); }
 
 // Get the calorie target active on a given date
