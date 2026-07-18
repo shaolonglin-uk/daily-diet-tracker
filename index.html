@@ -882,23 +882,11 @@ function renderToday() {
   summaryGrid.className = 'meal-summary-grid';
   summaryGrid.style.marginTop = '14px';
   var mealTypes = [['breakfast','早餐','🌅'],['lunch','午餐','☀️'],['dinner','晚餐','🌙'],['snack','加餐','🍪']];
-  // Debug: log breakfast data
-  if (day && day.meals) {
-    var bMeals = day.meals.filter(function(m){ return m.type === 'breakfast'; });
-    if (bMeals.length > 1) {
-      console.log('v3.67 DEBUG: breakfast meals=' + bMeals.length + ', cals=' + JSON.stringify(bMeals.map(function(x){return x.totalCalories;})));
-      console.log('v3.67 DEBUG: D.records[today].meals count=' + day.meals.length);
-    }
-  }
   mealTypes.forEach(function(mt) {
-    var meals = (day && day.meals) ? day.meals.filter(function(m){ return m.type === mt[0]; }) : [];
+    var meals = (day && day.meals) ? day.meals.filter(function(m){ return m.type === mt[0] && (m.totalCalories||0) > 0; }) : [];
     var cal = meals.reduce(function(s, m){ return s + (m.totalCalories||0); }, 0);
     var countLabel = meals.length > 1 ? ' (' + meals.length + '餐)' : '';
-    var detail = '';
-    if (meals.length > 1) {
-      detail = '<div style="font-size:11px;color:#999;margin-top:2px">' + meals.map(function(m,i){return '第'+(i+1)+'餐 '+(m.totalCalories||0)+'卡';}).join(' · ') + '</div>';
-    }
-    summaryGrid.innerHTML += '<div class="summary-box"><div class="sb-ico">' + mt[2] + '</div><div class="sb-name">' + mt[1] + '</div><div class="sb-cal">' + cal + '卡' + countLabel + '</div>' + detail + '</div>';
+    summaryGrid.innerHTML += '<div class="summary-box"><div class="sb-ico">' + mt[2] + '</div><div class="sb-name">' + mt[1] + '</div><div class="sb-cal">' + cal + '卡' + countLabel + '</div></div>';
   });
   el.appendChild(summaryGrid);
 
@@ -1938,6 +1926,5 @@ function ringSVG(calPct, waterPct) {
 }
   loadData();
   </script>
-<!-- cache-bust: 2026-07-18-v3.69 -->
 </body>
 </html>
