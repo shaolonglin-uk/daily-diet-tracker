@@ -924,7 +924,7 @@ function stickyHTML(m) {
   h += '<button class="meal-del" onclick="delMeal(\'' + m.id + '\')">×</button>';
   h += '<div class="mh"><div class="mt">' + (MEAL_ICO[m.type]||'') + ' ' + (MEAL_NAME[m.type]||m.type) + '</div>';
   h += '<div class="mt2">' + (m.time||'') + '</div></div>';
-  if (m.photo) {
+  if (m.photo && m.photo.length) {
     h += '<div class="photo-strip">';
     var pics = Array.isArray(m.photo) ? m.photo : [m.photo];
     pics.forEach(function(p) {
@@ -1232,8 +1232,8 @@ function onPhotoSelect(input) {
       div.innerHTML = '<img src="' + dataUrl + '" style="width:100%;height:100%;object-fit:cover"><button onclick="removePhoto(this)" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>';
       preview.appendChild(div);
       
-      // Trigger AI recognition on first photo after it's loaded
-      if (idx === 0) {
+      // Trigger AI recognition on first photo only if no foods entered yet
+      if (idx === 0 && foodRowCount === 0) {
         recognizeFood(file);
       }
     });
@@ -1487,7 +1487,7 @@ async function saveMeal() {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
     type: curType,
     time: pad(now.getHours()) + ':' + pad(now.getMinutes()),
-    photo: uploadedPhotos.length > 0 ? uploadedPhotos[0] : '',
+    photo: uploadedPhotos.length > 0 ? uploadedPhotos.slice() : [],
     foods: foods,
     totalCalories: totalCal
   };
