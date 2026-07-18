@@ -434,7 +434,7 @@ h1{font-size:18px;font-weight:700}
         
         <!-- Photo upload area -->
         <div id="photoPreview" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
-        <button class="photo-btn" onclick="document.getElementById('photoInput').click()">📷 拍照 / 🖼️ 从相册选择</button>
+        <button class="photo-btn" id="photoBtn" onclick="document.getElementById('photoInput').click()">📷 拍照 / 🖼️ 从相册选择</button>
         <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="onPhotoSelect(this)">
         
         <div id="foodRows" style="display:flex;flex-direction:column;gap:8px">
@@ -1067,8 +1067,10 @@ function openAdd() {
   curPhoto = '';
   curType = 'breakfast';
   uploadedPhotos = [];
+  var aiTriggered = false;
   document.getElementById('addModal').classList.add('on');
   document.body.style.overflow = 'hidden';
+  updatePhotoButton();
 
   // Reset form
   document.getElementById('calDisplay').textContent = '0 卡';
@@ -1232,10 +1234,14 @@ function onPhotoSelect(input) {
       div.innerHTML = '<img src="' + dataUrl + '" style="width:100%;height:100%;object-fit:cover"><button onclick="removePhoto(this)" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>';
       preview.appendChild(div);
       
-      // Trigger AI recognition on first photo only if no foods entered yet
-      if (idx === 0 && foodRowCount === 0) {
+      // Trigger AI recognition only on first photo, before any manual input
+      if (idx === 0 && !aiTriggered) {
+        aiTriggered = true;
         recognizeFood(file);
       }
+      
+      // Hide camera button when 3 photos reached
+      updatePhotoButton();
     });
   });
   
@@ -1248,6 +1254,17 @@ function removePhoto(btn) {
   var idx = Array.from(parent.children).indexOf(div);
   uploadedPhotos.splice(idx, 1);
   div.remove();
+  updatePhotoButton();
+}
+
+function updatePhotoButton() {
+  var btn = document.getElementById('photoBtn');
+  if (!btn) return;
+  if (uploadedPhotos.length >= 3) {
+    btn.style.display = 'none';
+  } else {
+    btn.style.display = '';
+  }
 }
 
 async function recognizeFood(file) {
