@@ -1734,6 +1734,9 @@ async function saveSettings() {
   if (height) D.settings.height = height;
   if (curWeight) D.settings.currentWeight = curWeight;
   if (targetWeight) D.settings.targetWeight = targetWeight;
+  D.settings.goalType = gt;
+  D.settings.dailyCalorieTarget = ct;
+  D.settings.dailyWaterTarget = wt;
   if (!D.settings.targetHistory) D.settings.targetHistory = {};
   // Preserve the original target as default for past dates
   if (!D.settings._defaultTarget) {
