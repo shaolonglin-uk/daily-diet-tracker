@@ -732,6 +732,8 @@ async function loadData() {
   }
   if (!D.settings.targetHistory) D.settings.targetHistory = {};
   if (!D.settings._defaultTarget) D.settings._defaultTarget = D.settings.dailyCalorieTarget;
+  if (!D.settings.waterTargetHistory) D.settings.waterTargetHistory = {};
+  if (!D.settings._defaultWaterTarget) D.settings._defaultWaterTarget = D.settings.dailyWaterTarget;
   if (!D.settings.dailyWaterTarget) D.settings.dailyWaterTarget = 2000;
   if (!D.settings.gender) D.settings.gender = 'male';
   // Load personal info into inputs
@@ -994,8 +996,8 @@ function renderCal() {
       var wt = getWaterTotal(ds);
       if (wt > 0) {
         cls += ' has-rec';
-        if (wt >= waterTarget) cls += ' over-rec';
-        else if (wt >= waterTarget * 0.8) cls += ' near-rec';
+        if (wt >= getWaterTargetForDate(ds)) cls += ' over-rec';
+        else if (wt >= getWaterTargetForDate(ds) * 0.8) cls += ' near-rec';
       }
     } else {
       var tgt2 = getTargetForDate(ds);
@@ -1019,7 +1021,7 @@ function renderCal() {
       if (day.meals) day.meals.forEach(function(food, fi) { calFromMeals += (food.totalCalories || 0); });
       if (calFromMeals && tgt2) calPct = calFromMeals / tgt2 * 100;
       var wt2 = getWaterTotal(ds);
-      if (wt2 && waterTarget) waterPct = wt2 / waterTarget * 100;
+      if (wt2 && waterTarget) waterPct = wt2 / getWaterTargetForDate(ds) * 100;
     }
     var hasData = calPct > 0 || waterPct > 0;
     if (hasData && !(cls.indexOf("future") >= 0)) cls += " has-rec";
@@ -1734,17 +1736,21 @@ async function saveSettings() {
   if (height) D.settings.height = height;
   if (curWeight) D.settings.currentWeight = curWeight;
   if (targetWeight) D.settings.targetWeight = targetWeight;
-  D.settings.goalType = gt;
+  if (!D.settings.targetHistory) D.settings.targetHistory = {};
+  if (!D.settings.waterTargetHistory) D.settings.waterTargetHistory = {};
   // Preserve the original target as default for past dates (set before changing)
   if (!D.settings._defaultTarget) {
     D.settings._defaultTarget = D.settings.dailyCalorieTarget || 1800;
   }
+  if (!D.settings._defaultWaterTarget) {
+    D.settings._defaultWaterTarget = D.settings.dailyWaterTarget || 2000;
+  }
   D.settings.dailyCalorieTarget = ct;
   D.settings.dailyWaterTarget = wt;
   waterTarget = wt;
-  if (!D.settings.targetHistory) D.settings.targetHistory = {};
   // Record new target for today only
   D.settings.targetHistory[getRealToday()] = ct;
+  D.settings.waterTargetHistory[getRealToday()] = wt;
   localStorage.setItem('dietSettings', JSON.stringify(D.settings));
   toast('💾 已保存', 'ok');
   showView('viewToday');
@@ -1811,6 +1817,16 @@ function getTargetForDate(ds) {
   return 1800;
 }
 
+function getWaterTargetForDate(ds) {
+  var best = null;
+  for (var k in D.settings.waterTargetHistory) {
+    if (k <= ds && (!best || k > best)) best = k;
+  }
+  if (best) return D.settings.waterTargetHistory[best];
+  if (D.settings._defaultWaterTarget) return D.settings._defaultWaterTarget;
+  return 2000;
+}
+
 function navDate(delta) {
   var parts = today.split('-');
   var d = new Date(+parts[0], +parts[1]-1, +parts[2]);
@@ -1852,11 +1868,12 @@ function fmtDateCN(ds) {
 function renderWater() {
   var ds = waterDate || today;
   var total = getWaterTotal(ds);
-  var pct = total / waterTarget;
-  var over = total >= waterTarget;
+  var wt = getWaterTargetForDate(ds);
+  var pct = total / wt;
+  var over = total >= wt;
   document.getElementById('waterTotal').textContent = total;
   document.getElementById('waterDate').textContent = fmtDateCN(ds);
-  document.getElementById('waterTargetDisplay').textContent = waterTarget;
+  document.getElementById('waterTargetDisplay').textContent = wt;
   var fill = document.getElementById('waterProgressFill');
   fill.style.width = (pct * 100) + '%';
   var wp = document.getElementById('waterProgressText');
@@ -1874,7 +1891,7 @@ function renderWater() {
   var msgEl = document.getElementById('waterMsg');
   if (total === 0) msgEl.textContent = '今天还没有记录哦';
   else if (pct <= 0.5) msgEl.textContent = '😿 喝的太少了，多喝点';
-  else if (total <= waterTarget) msgEl.textContent = '😋 继续保持，加油';
+  else if (total <= wt) msgEl.textContent = '😋 继续保持，加油';
   else msgEl.textContent = '💪 喝太多啦！注意适量哦';
   var records = getWaterData(ds);
   var listEl = document.getElementById('waterList');
