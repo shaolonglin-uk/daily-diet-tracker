@@ -1735,15 +1735,15 @@ async function saveSettings() {
   if (curWeight) D.settings.currentWeight = curWeight;
   if (targetWeight) D.settings.targetWeight = targetWeight;
   D.settings.goalType = gt;
+  // Preserve the original target as default for past dates (set before changing)
+  if (!D.settings._defaultTarget) {
+    D.settings._defaultTarget = D.settings.dailyCalorieTarget || 1800;
+  }
   D.settings.dailyCalorieTarget = ct;
   D.settings.dailyWaterTarget = wt;
   waterTarget = wt;
   if (!D.settings.targetHistory) D.settings.targetHistory = {};
-  // Preserve the original target as default for past dates
-  if (!D.settings._defaultTarget) {
-    D.settings._defaultTarget = D.settings.dailyCalorieTarget || 1800;
-  }
-  // Record new target for today
+  // Record new target for today only
   D.settings.targetHistory[getRealToday()] = ct;
   localStorage.setItem('dietSettings', JSON.stringify(D.settings));
   toast('💾 已保存', 'ok');
@@ -1808,7 +1808,7 @@ function getTargetForDate(ds) {
   }
   if (best) return D.settings.targetHistory[best];
   if (D.settings._defaultTarget) return D.settings._defaultTarget;
-  return D.settings.dailyCalorieTarget || 1800;
+  return 1800;
 }
 
 function navDate(delta) {
